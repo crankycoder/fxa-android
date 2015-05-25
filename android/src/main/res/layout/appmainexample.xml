@@ -6,7 +6,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:scrollbars="vertical"
-    android:background="@drawable/wareninja_wallpaper_img"
     >
    
 <LinearLayout 
@@ -75,117 +74,11 @@
 	        android:layout_marginTop="@dimen/margin_size_medium"
 	        />
         
-       
-       <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Facebook SSO"
-            android:gravity="center"
-            android:textSize="@dimen/text_size_small"/> 
-        <ImageButton 
-   			android:id="@+id/img_facebookConnect" 
-   			android:onClick="onClick_facebookConnect"
-	        android:visibility="visible"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-			android:src="@drawable/facebook_connect_full"
-	        android:adjustViewBounds="true"
-	        android:layout_marginLeft="@dimen/margin_size_large"
-	        android:layout_marginRight="@dimen/margin_size_large"
-			android:background="@null"
-			android:gravity="center"
-			/>
-         <View
-			android:layout_width="200dip" 
-	        android:layout_height="2dip"
-	        android:gravity="center_horizontal"
-			android:layout_gravity="center_horizontal"
-	        android:background="#FF909090"
-	        android:layout_marginTop="@dimen/margin_size_medium"
-	        />
-        
-         
-          <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Instagram OAuth2 Login"
-            android:gravity="center"
-            android:textSize="@dimen/text_size_small"/>
-        <ImageButton 
-   			android:id="@+id/img_instagramLogin" 
-   			android:onClick="onClick_instagramLogin"
-	        android:visibility="visible"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-			android:src="@drawable/generic_icon_instalogin"
-	        android:adjustViewBounds="true"
-	        android:layout_marginLeft="@dimen/margin_size_large"
-	        android:layout_marginRight="@dimen/margin_size_large"
-			android:background="@null"
-			android:gravity="center"
-			/>
-        <View
-			android:layout_width="200dip" 
-	        android:layout_height="2dip"
-	        android:gravity="center_horizontal"
-			android:layout_gravity="center_horizontal"
-	        android:background="#FF909090"
-	        android:layout_marginTop="@dimen/margin_size_medium"
-	        />
-       
-         
-         
-        
-         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TWILIO Connect signin/signup"
-            android:gravity="center"
-            android:textSize="@dimen/text_size_small"/>
-        <ImageButton 
-   			android:id="@+id/img_twilioConnect" 
-   			android:onClick="onClick_twilioConnect"
-	        android:visibility="visible"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-			android:src="@drawable/twilio_connect"
-	        android:adjustViewBounds="true"
-	        android:layout_marginLeft="@dimen/margin_size_large"
-	        android:layout_marginRight="@dimen/margin_size_large"
-			android:background="@null"
-			android:gravity="center"
-			/>
-        <View
-			android:layout_width="200dip" 
-	        android:layout_height="2dip"
-	        android:gravity="center_horizontal"
-			android:layout_gravity="center_horizontal"
-	        android:background="#FF909090"
-	        android:layout_marginTop="@dimen/margin_size_medium"
-	        />
-        
-         
-        
-         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="GOWALLA [service is dead!]"
-            android:gravity="center"
-            android:textSize="@dimen/text_size_small"/>
-         <ImageButton 
-	   			android:id="@+id/img_gowallaLogin" 
-	   			android:onClick="onClick_gowallaLogin"
-		        android:visibility="visible"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-				android:src="@drawable/generic_icon_gowallalogin"
-		        android:adjustViewBounds="true"
-		        android:layout_marginLeft="@dimen/margin_size_large"
-		        android:layout_marginRight="@dimen/margin_size_large"
-				android:background="@null"
-				android:gravity="center"
-				/>
-        
+
+
+
+
+
     
 </LinearLayout>
 
