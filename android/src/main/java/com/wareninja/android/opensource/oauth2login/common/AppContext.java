@@ -66,9 +66,11 @@ public class AppContext {
 	public static final String GOWALLA_APP_TOKEN_URL = "/api/oauth/token";
 
 	// Foursquare App params
-	public static final String FSQ_APP_KEY = "<YOURAPP_atFOURSQUARE_CLIENT_ID>";  
-	public static final String FSQ_APP_SECRET = "<YOURAPP_atFOURSQUARE_CLIENT_SECRET>";
-	public static final String FSQ_APP_CALLBACK_OAUTHCALLBACK = "http://WareNinja_OpenSource";// YOURAPP_REDIRECT_URI
+    // TODO: these need to be loaded from a Pref
+    // As it is, they're tied to a throwaway fake foursquare account
+	public static final String FSQ_APP_KEY = "DD1VQFVZ35YXLTT2LJKAPWDKPSOK1DFRHSRFXEGFTDKWLIOA";
+	public static final String FSQ_APP_SECRET = "OVXUEZGBEMH4IU2QLBN0SR1UQJJ3EHN34HTHPOIT31XTIN3B";
+	public static final String FSQ_APP_CALLBACK_OAUTHCALLBACK = "https://www.foursquare.com";
 	public static final String FSQ_APP_REDIRECT_SIGNIN = "https://m.foursquare.com/mobile/login";
 	public static final String FSQ_APP_OAUTH_BASEURL = "https://foursquare.com";
 	public static final String FSQ_APP_OAUTH_URL = "/oauth2/authenticate";
