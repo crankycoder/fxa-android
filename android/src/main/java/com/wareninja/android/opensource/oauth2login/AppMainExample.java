@@ -594,7 +594,7 @@ if user doesNOT ALLOW -> Bundle[{error=access_denied, error_description=The+user
 	                	
 	                	if(AppContext.DEBUG)Log.d(TAG, "Facebook-authorize: Login failed - " 
 	                			+ data.getStringExtra("error")
-	                			+ " |Ê" + data.getStringExtra("failing_url")
+	                			+ " |e" + data.getStringExtra("failing_url")
 	                			);
 	                // User pressed the 'back' button.
 	                } else {

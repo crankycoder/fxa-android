@@ -1,0 +1,118 @@
+// each of the version numbers must be 0-99
+def versionMajor = 0
+def versionMinor = 1 // minor feature releases
+def versionPatch = 0 // This should be bumped for hot fixes
+
+// Double check the versioning
+for (versionPart in [versionPatch, versionMinor, versionMajor]) {
+    assert 0 <= versionPart
+    assert versionPart <= 99
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+
+    dependencies {
+
+        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.+'
+        classpath 'com.github.jcandksolutions.gradle:android-unit-test:2.1.1'
+    }
+}
+
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.application'
+
+repositories {
+    jcenter()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    def gitHash = "git rev-parse --short HEAD".execute().text.trim()
+    def hasModifiedDeletedOrOtherFiles = !"git ls-files -mdo --exclude-standard".execute().text.trim().isEmpty()
+    def hasStagedFiles = !"git diff-index --no-ext-diff --name-only --cached HEAD".execute().text.trim().isEmpty()
+    def dirtyWorkingCopy = hasModifiedDeletedOrOtherFiles || hasStagedFiles 
+    def gitDescription = dirtyWorkingCopy ? "${gitHash}-dirty" : gitHash
+
+    packagingOptions {
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/DEPENDENCIES.txt'
+    }
+
+    defaultConfig {
+        targetSdkVersion 21
+        minSdkVersion 21
+
+        applicationId "com.wareninja.android.opensource.oauth2login"
+
+        versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+
+    buildTypes {
+        debug {
+            jniDebuggable true
+            applicationIdSuffix ".debug"
+        }
+
+        unittest.initWith(buildTypes.debug)
+        unittest {
+            buildConfigField "boolean", "ROBOLECTRIC", "true"
+        }
+    }
+
+    lintOptions {
+        disable 'MissingTranslation'
+        abortOnError false
+    }
+}
+
+apply plugin: 'android-unit-test'
+
+androidUnitTest {
+}
+
+
+dependencies {
+    compile ('com.google.oauth-client:google-oauth-client:1.20.0') {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'httpclient', module: 'org.apache.httpcomponents'
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'android', module: 'com.google.android'
+    }
+
+    compile 'com.google.http-client:google-http-client-android:1.20.0'
+
+    //TODO: this can probably be dropped
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+
+    androidTestCompile 'junit:junit:4.10'
+    testCompile        'junit:junit:4.10'
+
+    androidTestCompile 'org.robolectric:robolectric:2.4'
+    testCompile        'org.robolectric:robolectric:2.4'
+
+    androidTestCompile "org.mockito:mockito-core:1.+"
+    testCompile        "org.mockito:mockito-core:1.+"
+
+    compile 'org.slf4j:slf4j-android:1.7.7'
+
+    // https://developer.android.com/tools/support-library/features.html
+    // In general, we recommend including the v4 support and v7 appcompat
+    // libraries, because they support a wide range of Android versions and
+    // provide APIs for recommended user interface patterns.
+
+    compile "com.android.support:support-v4:21.0.+"
+    compile 'com.android.support:appcompat-v7:19.1.0'
+}

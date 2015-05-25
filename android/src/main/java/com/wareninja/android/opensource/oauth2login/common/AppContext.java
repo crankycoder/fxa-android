@@ -91,9 +91,9 @@ public class AppContext {
 	public static final String[] INSTAGRAM_PERMISSIONS = new String[] {
 	/* see: http://instagram.com/developer/authentication/#scope
 	 * basic - to read any and all data related to a user (e.g. following/followed-by lists, photos, etc.) (granted by default)
-	 * comments - to create or delete comments on a user’s behalf
-	 * relationships - to follow and unfollow users on a user’s behalf
-	 * likes - to like and unlike items on a user’s behalf
+	 * comments - to create or delete comments on a user's behalf
+	 * relationships - to follow and unfollow users on a user's behalf
+	 * likes - to like and unlike items on a user's behalf
 	 */
 		// NOTE: remember to extend these permissions as per your need!!!!  
 		"likes", "comments"
