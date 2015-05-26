@@ -48,7 +48,7 @@ public class AppContext {
 	public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "https://ec2-52-1-93-147.compute-1.amazonaws.com/leaderboards/fxa_auth";
 
 	public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
-	public static final profile_uri": "https://stable.dev.lcip.org/profile/v1",
+	public static final String FXA_PROFILE_BASEURL = "https://stable.dev.lcip.org/profile/v1";
 
 
 	public static final String FXA_APP_OAUTH_URL = "/oauth2/authenticate";
