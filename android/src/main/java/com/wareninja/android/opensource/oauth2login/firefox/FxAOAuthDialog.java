@@ -101,7 +101,7 @@ public class FxAOAuthDialog extends Dialog {
         Drawable icon = getContext().getResources().getDrawable(
                 R.drawable.img_icon_fsqlogin_header_small);
         mTitle = new TextView(getContext());
-        mTitle.setText("FOURSQUARE OAuth");
+        mTitle.setText("Firefox Accounts");
         mTitle.setTextColor(Color.WHITE);
         mTitle.setTypeface(Typeface.DEFAULT_BOLD);
         mTitle.setBackgroundColor(BG_COLOR);
@@ -119,6 +119,7 @@ public class FxAOAuthDialog extends Dialog {
         mWebView.setWebViewClient(new FxAOAuthDialog.OAuthWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setSavePassword(false);
+        mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.loadUrl(mUrl);
         mWebView.setLayoutParams(FILL);
         mContent.addView(mWebView);
