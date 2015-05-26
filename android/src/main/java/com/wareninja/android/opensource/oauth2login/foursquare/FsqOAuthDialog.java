@@ -134,14 +134,14 @@ public class FsqOAuthDialog extends Dialog {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            if (AppContext.DEBUG)Log.d(TAG, "onPageStarted->Webview loading URL: " + url);
+            Log.d(TAG, "onPageStarted->Webview loading URL: " + url);
             super.onPageStarted(view, url, favicon);
             mSpinner.show();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
-        	if (AppContext.DEBUG)Log.d(TAG, "onPageFinished->Webview URL: " + url);
+            Log.d(TAG, "onPageFinished->Webview URL: " + url);
         	super.onPageFinished(view, url);
         	
             String title = mWebView.getTitle();
