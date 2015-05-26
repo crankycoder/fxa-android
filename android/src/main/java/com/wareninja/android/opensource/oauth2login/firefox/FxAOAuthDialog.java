@@ -1,9 +1,4 @@
-/***
-	Copyright (c) 2011-2012 WareNinja.com 
-	http://www.WareNinja.com - https://github.com/WareNinja
-	
-	Author: yg@wareninja.com / twitter: @WareNinja
-
+/***v
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
   a copy of the License at
@@ -13,9 +8,6 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  
-  >> Summary of the license:
-  	You are allowed to re-use this code as you like, no kittens should be harmed though! 
  */
 
 
@@ -27,7 +19,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -39,7 +30,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.wareninja.android.opensource.oauth2login.R;
 import com.wareninja.android.opensource.oauth2login.common.AppContext;
 import com.wareninja.android.opensource.oauth2login.common.DialogListener;
 import com.wareninja.android.opensource.oauth2login.common.Utils;
@@ -47,12 +37,6 @@ import com.wareninja.android.opensource.oauth2login.common.Utils;
 public class FxAOAuthDialog extends Dialog {
 
 	private static final String TAG = FxAOAuthDialog.class.getSimpleName();
-
-	/* Strings used in the OAuth flow */
-    public static final String OAUTHCALLBACK_URI = AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK;
-    //public static final String TOKEN = "access_token";// FIXME: adapt this
-    //public static final String EXPIRES = "expires_in";
-
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
     static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
@@ -98,17 +82,13 @@ public class FxAOAuthDialog extends Dialog {
 
     private void setUpTitle() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Drawable icon = getContext().getResources().getDrawable(
-                R.drawable.img_icon_fsqlogin_header_small);
         mTitle = new TextView(getContext());
         mTitle.setText("Firefox Accounts");
         mTitle.setTextColor(Color.WHITE);
         mTitle.setTypeface(Typeface.DEFAULT_BOLD);
         mTitle.setBackgroundColor(BG_COLOR);
         mTitle.setPadding(MARGIN + PADDING, MARGIN, MARGIN, MARGIN);
-        mTitle.setCompoundDrawablePadding(MARGIN + PADDING);
-        mTitle.setCompoundDrawablesWithIntrinsicBounds(
-                icon, null, null, null);
+
         mContent.addView(mTitle);
     }
 
@@ -139,14 +119,14 @@ public class FxAOAuthDialog extends Dialog {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            if (AppContext.DEBUG)Log.d(TAG, "onPageStarted->Webview loading URL: " + url);
+            Log.d(TAG, "onPageStarted->Webview loading URL: " + url);
             super.onPageStarted(view, url, favicon);
             mSpinner.show();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
-        	if (AppContext.DEBUG)Log.d(TAG, "onPageFinished->Webview URL: " + url);
+        	Log.d(TAG, "onPageFinished->Webview URL: " + url);
         	super.onPageFinished(view, url);
         	
             String title = mWebView.getTitle();
@@ -161,8 +141,9 @@ public class FxAOAuthDialog extends Dialog {
             catch (Exception ex) {
             	Log.w(TAG, "wtf exception onPageFinished! " + ex.toString());
             }
-              
-            if (url.startsWith(OAUTHCALLBACK_URI)) {
+
+            Log.i(TAG, "Redirect to URL: " + url);
+            if (url.startsWith(AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK)) {
                 Bundle values = Utils.parseUrl(url); 
  
                
@@ -178,8 +159,8 @@ public class FxAOAuthDialog extends Dialog {
                     mListener.onCancel();
                 } 
 
-                FxAOAuthDialog.this.dismiss();
-            }
+                dismiss();
+            } 
         }   
         
     }
