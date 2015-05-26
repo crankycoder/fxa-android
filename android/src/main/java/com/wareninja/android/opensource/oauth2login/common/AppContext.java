@@ -45,7 +45,7 @@ public class AppContext {
 	// As it is, they're tied to a dev account
 	public static final String FXA_APP_KEY = "aec956a710997d9c";
 	public static final String FXA_APP_SECRET = "d0dd4725f379a0067c2ee8758dfb0658c6a4560a243082cad11a40a1702e7d9d";
-	public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/leaderboards/fxa_auth";
+	public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "https://ec2-52-1-93-147.compute-1.amazonaws.com/leaderboards/fxa_auth";
 	public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
 	public static final String FXA_APP_OAUTH_URL = "/oauth2/authenticate";
 	public static final String FXA_APP_TOKEN_URL = "/oauth2/access_token";
