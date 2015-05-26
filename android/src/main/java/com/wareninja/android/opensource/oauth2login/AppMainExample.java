@@ -30,9 +30,10 @@ import android.view.View;
 import android.webkit.CookieSyncManager;
 
 import com.wareninja.android.opensource.oauth2login.common.AppContext;
-import com.wareninja.android.opensource.oauth2login.common.GenericDialogListener;
+import com.wareninja.android.opensource.oauth2login.common.DialogListener;
 import com.wareninja.android.opensource.oauth2login.common.LOGGING;
 import com.wareninja.android.opensource.oauth2login.common.WebService;
+import com.wareninja.android.opensource.oauth2login.firefox.FxAOAuthDialog;
 import com.wareninja.android.opensource.oauth2login.foursquare.FsqOAuthDialog;
 
 import java.util.HashMap;
@@ -59,17 +60,20 @@ public class AppMainExample extends Activity {
     public void onClick_fsqLogin(View v) {
 
     	webService = new WebService();
-    	
+
     	String authRequestRedirect = AppContext.FSQ_APP_OAUTH_BASEURL+AppContext.FSQ_APP_OAUTH_URL
 		        + "?client_id="+AppContext.FSQ_APP_KEY
-		        + "&response_type=code" 
-		        + "&display=touch"
-		        + "&redirect_uri="+AppContext.FSQ_APP_CALLBACK_OAUTHCALLBACK;
-		if(LOGGING.DEBUG)Log.d(TAG, "authRequestRedirect->"+authRequestRedirect);
+		        + "&response_type=code"
+				+ "&display=touch"
+				+ "&redirect_uri=" + AppContext.FSQ_APP_CALLBACK_OAUTHCALLBACK;
+
+		if (LOGGING.DEBUG) {
+			Log.d(TAG, "authRequestRedirect->" + authRequestRedirect);
+		}
 		
 		CookieSyncManager.createInstance(this);
 		new FsqOAuthDialog(mContext, authRequestRedirect
-				, new GenericDialogListener() {
+				, new DialogListener() {
 			public void onComplete(Bundle values) {
 				if(LOGGING.DEBUG)Log.d(TAG, "onComplete->"+values);
 				// https://YOUR_REGISTERED_REDIRECT_URI/?code=CODE
@@ -112,32 +116,87 @@ public class AppMainExample extends Activity {
 
     
 	public void onClick_facebookLogin(View v) {
-		// TODO: fill this out with the Firefox Accounts login snippet
-	}
+		webService = new WebService();
+
+		String authRequestRedirect = AppContext.FXA_APP_OAUTH_BASEURL+AppContext.FXA_APP_OAUTH_URL
+				+ "?client_id="+AppContext.FXA_APP_KEY
+				+ "&response_type=code"
+				+ "&display=touch"
+				+ "&redirect_uri=" + AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK;
+
+		if (LOGGING.DEBUG) {
+			Log.d(TAG, "authRequestRedirect->" + authRequestRedirect);
+		}
+
+		CookieSyncManager.createInstance(this);
+		new FxAOAuthDialog(mContext, authRequestRedirect
+				, new DialogListener() {
+			public void onComplete(Bundle values) {
+				if(LOGGING.DEBUG)Log.d(TAG, "onComplete->"+values);
+				// https://YOUR_REGISTERED_REDIRECT_URI/?code=CODE
+				// onComplete->Bundle[{state= , code=....}]
+
+				// ensure any cookies set by the dialog are saved
+				CookieSyncManager.getInstance().sync();
+
+				try{
+					webService.setWebServiceUrl(AppContext.FXA_APP_OAUTH_BASEURL);
+					// Call Foursquare again to get the access token
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("client_id", AppContext.FXA_APP_KEY);
+					params.put("client_secret", AppContext.FXA_APP_SECRET);
+					params.put("grant_type", "authorization_code");
+					params.put("redirect_uri", AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK);
+					params.put("code", values.getString("code"));
+					if(LOGGING.DEBUG) {
+						Log.d(TAG, "params->" + params);
+					}
+
+					String tokenResponse = webService.webGet(AppContext.FXA_APP_TOKEN_URL, params);
+					if(LOGGING.DEBUG) {
+						Log.d(TAG, "tokenResponse->" + tokenResponse);
+					}
+					broadcastLoginResult(AppContext.COMMUNITY.FXA, tokenResponse);
+					//JSONObject tokenJson = new JSONObject(tokenResponse);
+					//if(LOGGING.DEBUG)Log.d(TAG, "tokenJson->" + tokenJson);
+
+				}
+				catch (Exception ex1){
+					Log.w(TAG, ex1.toString());
+				}
+			}
+			public void onError(String e) {
+				if(LOGGING.DEBUG)Log.d(TAG, "onError->"+e);
+			}
+			public void onCancel() {
+				if(LOGGING.DEBUG)Log.d(TAG, "onCancel()");
+			}
+		}).show();	}
 
 	
-	private void broadcastLoginResult(AppContext.COMMUNITY community, String payload) {
+	private void broadcastLoginResult(AppContext.COMMUNITY community, String token) {
 		
 		String intentAction = "";
-		String intentExtra = "";
 		try {
 			
 			if (AppContext.COMMUNITY.FOURSQUARE.equals(community)) {
 				intentAction = AppContext.BCAST_USERLOGIN_FSQ;
-				intentExtra = AppContext.INTENT_EXTRA_USERLOGIN_FSQ;
+			} else if (AppContext.COMMUNITY.FXA.equals(community)) {
+				intentAction = AppContext.BCAST_USERLOGIN_FXA;
+			} else {
+				throw new RuntimeException("Unrecognized community!: ["+community+"]");
 			}
 
 			if(LOGGING.DEBUG) {
 				Log.d(TAG, "sending Broadcast! "
 								+ "|intentAction->" + intentAction
-								+ "|intentExtra->" + intentExtra
-								+ "|payload->" + payload
+								+ "|token->" + token
 				);
 			}
 			
 			Intent mIntent = new Intent();
-        	mIntent.setAction(intentAction);
-        	mIntent.putExtra(intentExtra, payload);
+			mIntent.setAction(intentAction);
+        	mIntent.putExtra("token", token);
         	this.sendBroadcast(mIntent);
 		}
     	catch (Exception ex) {

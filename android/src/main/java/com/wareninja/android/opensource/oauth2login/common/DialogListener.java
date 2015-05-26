@@ -23,7 +23,7 @@ package com.wareninja.android.opensource.oauth2login.common;
 import android.os.Bundle;
 
 
-public abstract class GenericDialogListener {
+public class DialogListener {
 
     
     /**

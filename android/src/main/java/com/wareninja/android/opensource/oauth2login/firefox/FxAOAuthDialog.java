@@ -13,10 +13,13 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+  
+  >> Summary of the license:
+  	You are allowed to re-use this code as you like, no kittens should be harmed though! 
  */
 
 
-package com.wareninja.android.opensource.oauth2login.foursquare;
+package com.wareninja.android.opensource.oauth2login.firefox;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -41,32 +44,33 @@ import com.wareninja.android.opensource.oauth2login.common.AppContext;
 import com.wareninja.android.opensource.oauth2login.common.DialogListener;
 import com.wareninja.android.opensource.oauth2login.common.Utils;
 
-public class FsqOAuthDialog extends Dialog {
+public class FxAOAuthDialog extends Dialog {
 
-	private static final String TAG = "FsqOAuthDialog";
-	
+	private static final String TAG = FxAOAuthDialog.class.getSimpleName();
+
 	/* Strings used in the OAuth flow */
-    static final String OAUTH_CALLBACK_URI = AppContext.FSQ_APP_CALLBACK_OAUTHCALLBACK;
+    public static final String OAUTHCALLBACK_URI = AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK;
+    //public static final String TOKEN = "access_token";// FIXME: adapt this
+    //public static final String EXPIRES = "expires_in";
+
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
     static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
     static final float[] DIMENSIONS_PORTRAIT = {280, 420};
-    static final FrameLayout.LayoutParams FILL = 
-        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 
+    static final FrameLayout.LayoutParams FILL =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
                          ViewGroup.LayoutParams.FILL_PARENT);
-
     static final int MARGIN = 4;
     static final int PADDING = 2;
 
-    
     private String mUrl;
     private DialogListener mListener;
     private ProgressDialog mSpinner;
     private WebView mWebView;
     private LinearLayout mContent;
     private TextView mTitle;
-    
-    public FsqOAuthDialog(Context context, String url, DialogListener listener) {
+
+    public FxAOAuthDialog(Context context, String url, DialogListener listener) {
         super(context);
         mUrl = url;
         mListener = listener;
@@ -78,7 +82,7 @@ public class FsqOAuthDialog extends Dialog {
         mSpinner = new ProgressDialog(getContext());
         mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mSpinner.setMessage("Loading...");
-        
+
         mContent = new LinearLayout(getContext());
         mContent.setOrientation(LinearLayout.VERTICAL);
         setUpTitle();
@@ -107,12 +111,12 @@ public class FsqOAuthDialog extends Dialog {
                 icon, null, null, null);
         mContent.addView(mTitle);
     }
-    
+
     private void setUpWebView() {
         mWebView = new WebView(getContext());
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-        mWebView.setWebViewClient(new FsqOAuthDialog.OAuthWebViewClient());
+        mWebView.setWebViewClient(new FxAOAuthDialog.OAuthWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setSavePassword(false);
         mWebView.loadUrl(mUrl);
@@ -129,7 +133,7 @@ public class FsqOAuthDialog extends Dialog {
             /*// TODO: pass error back to listener!
              * mListener.onError( 
                     new DialogError(description, errorCode, failingUrl));*/
-            FsqOAuthDialog.this.dismiss();
+            FxAOAuthDialog.this.dismiss();
         }
 
         @Override
@@ -157,7 +161,7 @@ public class FsqOAuthDialog extends Dialog {
             	Log.w(TAG, "wtf exception onPageFinished! " + ex.toString());
             }
               
-            if (url.startsWith(OAUTH_CALLBACK_URI)) {
+            if (url.startsWith(OAUTHCALLBACK_URI)) {
                 Bundle values = Utils.parseUrl(url); 
  
                
@@ -173,7 +177,7 @@ public class FsqOAuthDialog extends Dialog {
                     mListener.onCancel();
                 } 
 
-                FsqOAuthDialog.this.dismiss();
+                FxAOAuthDialog.this.dismiss();
             }
         }   
         

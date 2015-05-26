@@ -32,8 +32,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
 
     def gitHash = "git rev-parse --short HEAD".execute().text.trim()
     def hasModifiedDeletedOrOtherFiles = !"git ls-files -mdo --exclude-standard".execute().text.trim().isEmpty()
@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        targetSdkVersion 21
-        minSdkVersion 21
+        minSdkVersion 10
+        targetSdkVersion 18
 
         applicationId "com.wareninja.android.opensource.oauth2login"
 
