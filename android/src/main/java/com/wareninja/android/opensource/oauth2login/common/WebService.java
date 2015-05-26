@@ -32,7 +32,7 @@ import android.util.Log;
 
 public class WebService{
 
-	private static final String TAG = "WebService";
+    private static final String TAG = "WebService";
     DefaultHttpClient httpClient;
     HttpContext localContext;
     private String ret;
@@ -63,25 +63,25 @@ public class WebService{
         localContext = new BasicHttpContext();
     }
     public void setWebServiceUrl(String serviceName){
-    	webServiceUrl = serviceName;
+        webServiceUrl = serviceName;
     }
     public String getWebServiceUrl(String serviceName){
-    	return webServiceUrl;
+        return webServiceUrl;
     }
     
     // added by YG
     public String getJsonFromParams(Map<String, Object> params) {
 
-    	JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
 
-    	for (Map.Entry<String, Object> param : params.entrySet()){
-    		try {
-    			jsonObject.put(param.getKey(), param.getValue());
-			}
-    		catch (JSONException e) {
-    			Log.e(TAG, "JSONException : "+e);
-			}
-    	}
+        for (Map.Entry<String, Object> param : params.entrySet()){
+            try {
+                jsonObject.put(param.getKey(), param.getValue());
+            }
+            catch (JSONException e) {
+                Log.e(TAG, "JSONException : "+e);
+            }
+        }
         return jsonObject.toString();
     }
     public String webInvokeWithJson(String methodName, String jsonStr) {
@@ -91,16 +91,16 @@ public class WebService{
     //Use this method to do a HttpPost\WebInvoke on a Web Service
     public String webInvoke(String methodName, Map<String, Object> params) {
 
-    	JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
 
-    	for (Map.Entry<String, Object> param : params.entrySet()){
-    		try {
-    			jsonObject.put(param.getKey(), param.getValue());
-			}
-    		catch (JSONException e) {
-    			Log.e(TAG, "JSONException : "+e);
-			}
-    	}
+        for (Map.Entry<String, Object> param : params.entrySet()){
+            try {
+                jsonObject.put(param.getKey(), param.getValue());
+            }
+            catch (JSONException e) {
+                Log.e(TAG, "JSONException : "+e);
+            }
+        }
         return webInvoke(methodName,  jsonObject.toString(), "application/json");
     }
 
@@ -132,7 +132,7 @@ public class WebService{
 
         httpPost.setEntity(tmp);
 
-        if(LOGGING.DEBUG)Log.d(TAG, webServiceUrl + "?" + data);
+        Log.d(TAG, webServiceUrl + "?" + data);
 
         try {
             response = httpClient.execute(httpPost,localContext);
@@ -149,30 +149,30 @@ public class WebService{
 
     //Use this method to do a HttpGet/WebGet on the web service
     public String webGet(String methodName, Map<String, String> params) {
-    	String getUrl = webServiceUrl + methodName;
+        String getUrl = webServiceUrl + methodName;
 
-    	int i = 0;
-    	for (Map.Entry<String, String> param : params.entrySet())
-    	{
-    		if(i == 0){
-    			getUrl += "?";
-    		}
-    		else{
-    			getUrl += "&";
-    		}
+        int i = 0;
+        for (Map.Entry<String, String> param : params.entrySet())
+        {
+            if(i == 0){
+                getUrl += "?";
+            }
+            else{
+                getUrl += "&";
+            }
 
-    		try {
-				getUrl += param.getKey() + "=" + URLEncoder.encode(param.getValue(),"UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            try {
+                getUrl += param.getKey() + "=" + URLEncoder.encode(param.getValue(),"UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-    		i++;
-    	}
+            i++;
+        }
 
         httpGet = new HttpGet(getUrl);
-        if(LOGGING.DEBUG)Log.d(TAG, "WebGetURL: "+getUrl);
+        Log.d(TAG, "WebGetURL: "+getUrl);
 
         try {
             response = httpClient.execute(httpGet);

@@ -20,6 +20,6 @@ package com.wareninja.android.opensource.oauth2login.common;
 
 public class LOGGING {
 
-	public static final boolean DEBUG = true;// enable/disable debug logging
+	public static final boolean DEBUG = true;
     
 }
