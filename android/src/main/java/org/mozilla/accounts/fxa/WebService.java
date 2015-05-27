@@ -1,4 +1,4 @@
-package com.wareninja.android.opensource.oauth2login.common;
+package org.mozilla.accounts.fxa;
 
 import android.util.Log;
 
@@ -26,7 +26,8 @@ import java.util.Map;
 
 public class WebService{
 
-    private static final String TAG = "WebService";
+    private static final String TAG = LOGGING.makeLogTag(WebService.class);
+
     DefaultHttpClient httpClient;
     HttpContext localContext;
     private String ret;

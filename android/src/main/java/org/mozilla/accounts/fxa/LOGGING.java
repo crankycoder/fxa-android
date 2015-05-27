@@ -16,10 +16,21 @@
  *  limitations under the License.
 */
 
-package com.wareninja.android.opensource.oauth2login.common;
+package org.mozilla.accounts.fxa;
 
 public class LOGGING {
 
 	public static final boolean DEBUG = true;
+
+	public static final String LOG_PREFIX = "Stumbler_";
+
+	public static String makeLogTag(Class<?> cls) {
+		String name = cls.getSimpleName();
+		final int maxLen = 23 - LOG_PREFIX.length();
+		if (name.length() > maxLen) {
+			name = name.substring(name.length() - maxLen, name.length());
+		}
+		return LOG_PREFIX + name;
+	}
     
 }

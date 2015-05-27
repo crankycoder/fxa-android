@@ -19,7 +19,7 @@
  */
 
 
-package com.wareninja.android.opensource.oauth2login.common;
+package org.mozilla.accounts.fxa;
 
 
 public class AppContext {

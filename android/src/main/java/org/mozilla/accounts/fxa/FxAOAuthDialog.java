@@ -11,7 +11,7 @@
  */
 
 
-package com.wareninja.android.opensource.oauth2login.firefox;
+package org.mozilla.accounts.fxa;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,11 +31,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.wareninja.android.opensource.oauth2login.common.DialogListener;
-
 public class FxAOAuthDialog extends Dialog {
 
-	private static final String TAG = FxAOAuthDialog.class.getSimpleName();
+	private static final String TAG = LOGGING.makeLogTag(FxAOAuthDialog.class);
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
     static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
@@ -47,7 +45,10 @@ public class FxAOAuthDialog extends Dialog {
     static final int PADDING = 2;
 
     private String mUrl;
+
+    @SuppressWarnings("unused")
     private DialogListener mListener;
+
     private ProgressDialog mSpinner;
     private WebView mWebView;
     private LinearLayout mContent;
@@ -141,9 +142,6 @@ public class FxAOAuthDialog extends Dialog {
         public void onReceivedError(WebView view, int errorCode,
                 String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            /*// TODO: pass error back to listener!
-             * mListener.onError( 
-                    new DialogError(description, errorCode, failingUrl));*/
             FxAOAuthDialog.this.dismiss();
         }
 
