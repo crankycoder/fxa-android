@@ -43,16 +43,12 @@ public class AppContext {
 	// FxA App params
 	// TODO: these need to be loaded from a Pref
 	// As it is, they're tied to a dev account
-	public static final String FXA_APP_KEY = "949a2e0051fed297";
-	public static final String FXA_APP_SECRET = "2324066c2f2d0cef84b58c48c931a2043b404905147ad712d1b79446d3924689";
-	public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "https://ec2-52-1-93-147.compute-1.amazonaws.com/leaderboards/fxa_auth";
+	public static final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
+	public static final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
+	public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
 
 	public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
-	public static final String FXA_PROFILE_BASEURL = "https://stable.dev.lcip.org/profile/v1";
-
-
-	public static final String FXA_APP_OAUTH_URL = "/oauth2/authenticate";
-	public static final String FXA_APP_TOKEN_URL = "/oauth2/access_token";
+	public static final String FXA_APP_TOKEN_URL = "/token";
 
 
 	public enum COMMUNITY {

@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -89,11 +90,11 @@ public class WebService{
     }
     
     //Use this method to do a HttpPost\WebInvoke on a Web Service
-    public String webInvoke(String methodName, Map<String, Object> params) {
+    public String webInvoke(String methodName, HashMap<String, String> params) {
 
         JSONObject jsonObject = new JSONObject();
 
-        for (Map.Entry<String, Object> param : params.entrySet()){
+        for (Map.Entry<String, String> param : params.entrySet()){
             try {
                 jsonObject.put(param.getKey(), param.getValue());
             }

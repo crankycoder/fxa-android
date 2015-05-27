@@ -33,13 +33,12 @@ import com.wareninja.android.opensource.oauth2login.common.AppContext;
 import com.wareninja.android.opensource.oauth2login.common.DialogListener;
 import com.wareninja.android.opensource.oauth2login.common.WebService;
 import com.wareninja.android.opensource.oauth2login.firefox.FxAOAuthDialog;
-import com.wareninja.android.opensource.oauth2login.foursquare.FsqOAuthDialog;
 
 import java.util.HashMap;
 
 public class AppMainExample extends Activity {
 
-    protected static final String TAG = "AppMainExample";
+    protected static final String TAG = "FxA.AppMainExample";
 
     public Context mContext;
     public Activity mActivity;
@@ -52,60 +51,6 @@ public class AppMainExample extends Activity {
         mContext = this;
         mActivity = this;
         setContentView(R.layout.appmainexample);
-    }
-
-
-    public void onClick_fsqLogin(View v) {
-
-        webService = new WebService();
-
-        String authRequestRedirect = AppContext.FSQ_APP_OAUTH_BASEURL + AppContext.FSQ_APP_OAUTH_URL
-                + "?client_id=" + AppContext.FSQ_APP_KEY
-                + "&response_type=code"
-                + "&display=touch"
-                + "&redirect_uri=" + AppContext.FSQ_APP_CALLBACK_OAUTHCALLBACK;
-
-        Log.d(TAG, "authRequestRedirect->" + authRequestRedirect);
-
-        CookieSyncManager.createInstance(this);
-        new FsqOAuthDialog(mContext, authRequestRedirect
-                , new DialogListener() {
-            public void onComplete(Bundle values) {
-                Log.d(TAG, "onComplete->" + values);
-                // https://YOUR_REGISTERED_REDIRECT_URI/?code=CODE
-                // onComplete->Bundle[{state= , code=....}]
-
-                // ensure any cookies set by the dialog are saved
-                CookieSyncManager.getInstance().sync();
-
-                try {
-                    webService.setWebServiceUrl(AppContext.FSQ_APP_OAUTH_BASEURL);
-                    // Call Foursquare again to get the access token
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put("client_id", AppContext.FSQ_APP_KEY);
-                    params.put("client_secret", AppContext.FSQ_APP_SECRET);
-                    params.put("grant_type", "authorization_code");
-                    params.put("redirect_uri", AppContext.FSQ_APP_CALLBACK_OAUTHCALLBACK);
-                    params.put("code", values.getString("code"));
-                    Log.d(TAG, "params->" + params);
-
-                    String tokenResponse = webService.webGet(AppContext.FSQ_APP_TOKEN_URL, params);
-                    Log.d(TAG, "tokenResponse->" + tokenResponse);
-
-                    broadcastLoginResult(AppContext.COMMUNITY.FOURSQUARE, tokenResponse);
-                } catch (Exception ex1) {
-                    Log.w(TAG, ex1.toString());
-                }
-            }
-
-            public void onError(String e) {
-                Log.d(TAG, "onError->" + e);
-            }
-
-            public void onCancel() {
-                Log.d(TAG, "onCancel()");
-            }
-        }).show();
     }
 
 
@@ -136,16 +81,13 @@ public class AppMainExample extends Activity {
                     HashMap<String, String> params = new HashMap<String, String>();
                     params.put("client_id", AppContext.FXA_APP_KEY);
                     params.put("client_secret", AppContext.FXA_APP_SECRET);
-                    params.put("grant_type", "authorization_code");
-                    params.put("redirect_uri", AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK);
                     params.put("code", values.getString("code"));
-                    params.put("state", values.getString("state"));
+                    Log.i(TAG, "values: " + values.keySet());
+                    Log.i(TAG, "params->" + params);
 
-                    Log.d(TAG, "values: " + values.keySet());
-                    Log.d(TAG, "params->" + params);
-
-                    String tokenResponse = webService.webGet(AppContext.FXA_APP_TOKEN_URL, params);
-                    Log.d(TAG, "tokenResponse->" + tokenResponse);
+                    Log.i(TAG, "Invoking code verification");
+                    String tokenResponse = webService.webInvoke(AppContext.FXA_APP_TOKEN_URL, params);
+                    Log.i(TAG, "tokenResponse->" + tokenResponse);
                     broadcastLoginResult(AppContext.COMMUNITY.FXA, tokenResponse);
                 } catch (Exception ex1) {
                     Log.w(TAG, ex1.toString());

@@ -97,7 +97,7 @@ public class FxAOAuthDialog extends Dialog {
         mWebView.setHorizontalScrollBarEnabled(false);
         mWebView.setWebViewClient(new FxAOAuthDialog.OAuthWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
+        mWebView.addJavascriptInterface(new ContentViewer(this), "HTMLOUT");
         mWebView.getSettings().setDomStorageEnabled(true);
 
         /* WebViewClient must be set BEFORE calling loadUrl! */
@@ -112,6 +112,27 @@ public class FxAOAuthDialog extends Dialog {
         mWebView.loadUrl(mUrl);
         mWebView.setLayoutParams(FILL);
         mContent.addView(mWebView);
+    }
+
+
+    /*
+     This is the final callback
+     */
+    public void contentCallback(String html) {
+        if (html.contains("\"access_token\"")) {
+            int start = html.indexOf("<body>") + "<body>".length();
+            int end = html.indexOf("</body>");
+            String jsonBlob = html.substring(start, end);
+            new AlertDialog.Builder(getContext())
+                    .setTitle("JSON Response")
+                    .setMessage(jsonBlob)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setCancelable(false)
+                    .create()
+                    .show();
+
+            dismiss();
+        }
     }
 
     private class OAuthWebViewClient extends WebViewClient {
@@ -157,26 +178,18 @@ public class FxAOAuthDialog extends Dialog {
         
     }
 
-    private class MyJavaScriptInterface {
+    private class ContentViewer {
+
+        private final FxAOAuthDialog myCallback;
+
+        ContentViewer(FxAOAuthDialog callback) {
+            myCallback = callback;
+        }
         @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
         public void showHTML(String html)
         {
-            if (html.contains("\"access_token\"")) {
-                int start = html.indexOf("<body>") + "<body>".length();
-                int end = html.indexOf("</body>");
-                String jsonBlob = html.substring(start, end);
-                // TODO: this HTML string should be the full content of the
-                new AlertDialog.Builder(getContext())
-                        .setTitle("HTML")
-                        .setMessage(jsonBlob)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setCancelable(false)
-                        .create()
-                        .show();
-
-                dismiss();
-            }
+            myCallback.contentCallback(html);
         }
     }
 }
