@@ -57,7 +57,7 @@ android {
 
         targetSdkVersion 18
 
-        applicationId "com.wareninja.android.opensource.oauth2login"
+        applicationId "org.mozilla.firefoxaccounts"
 
         versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -97,7 +97,7 @@ dependencies {
 
     compile 'com.google.http-client:google-http-client-android:1.20.0'
 
-    //TODO: this can probably be dropped
+    // TODO: this can probably be dropped
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
 
     androidTestCompile 'junit:junit:4.10'

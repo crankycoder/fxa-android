@@ -124,6 +124,8 @@ public class FxAOAuthDialog extends Dialog {
             int start = html.indexOf("<body>") + "<body>".length();
             int end = html.indexOf("</body>");
             String jsonBlob = html.substring(start, end);
+
+            // TODO:
             new AlertDialog.Builder(getContext())
                     .setTitle("JSON Response")
                     .setMessage(jsonBlob)

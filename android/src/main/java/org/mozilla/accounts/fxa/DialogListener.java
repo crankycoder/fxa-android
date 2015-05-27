@@ -13,9 +13,6 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  
-  >> Summary of the license:
-  	You are allowed to re-use this code as you like, no kittens should be harmed though! 
  */
 
 package org.mozilla.accounts.fxa;
@@ -25,7 +22,6 @@ import android.util.Log;
 import android.webkit.CookieSyncManager;
 
 import java.util.HashMap;
-
 
 public class DialogListener {
     private static final String TAG = LOGGING.makeLogTag(DialogListener.class);
@@ -37,6 +33,7 @@ public class DialogListener {
      * @param values
      *            Key-value string pairs extracted from the response.
      */
+    @SuppressWarnings("unused")
     public void onComplete(Bundle values) {
         Log.i(TAG, "onComplete->" + values);
 
