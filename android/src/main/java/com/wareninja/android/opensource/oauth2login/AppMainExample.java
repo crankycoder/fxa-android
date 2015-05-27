@@ -23,7 +23,6 @@ package com.wareninja.android.opensource.oauth2login;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -59,7 +58,7 @@ public class AppMainExample extends Activity {
 
         String authRequestRedirect = "https://stable.dev.lcip.org/oauth/signin"
                 + "?client_id=" + AppContext.FXA_APP_KEY
-                + "&state=99" // TODO: this needs to be generated on the fly
+                + "&state=99" // I don't care about state
                 + "&scope=profile:email"
                 + "&redirect_uri=" + AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK;
 
@@ -88,7 +87,9 @@ public class AppMainExample extends Activity {
                     Log.i(TAG, "Invoking code verification");
                     String tokenResponse = webService.webInvoke(AppContext.FXA_APP_TOKEN_URL, params);
                     Log.i(TAG, "tokenResponse->" + tokenResponse);
-                    broadcastLoginResult(AppContext.COMMUNITY.FXA, tokenResponse);
+
+                    // TODO: add a hook here so that people can add their own behavior
+                    // on login
                 } catch (Exception ex1) {
                     Log.w(TAG, ex1.toString());
                 }
@@ -105,30 +106,5 @@ public class AppMainExample extends Activity {
     }
 
 
-    private void broadcastLoginResult(AppContext.COMMUNITY community, String token) {
 
-        String intentAction = "";
-        try {
-
-            if (AppContext.COMMUNITY.FOURSQUARE.equals(community)) {
-                intentAction = AppContext.BCAST_USERLOGIN_FSQ;
-            } else if (AppContext.COMMUNITY.FXA.equals(community)) {
-                intentAction = AppContext.BCAST_USERLOGIN_FXA;
-            } else {
-                throw new RuntimeException("Unrecognized community!: [" + community + "]");
-            }
-
-            Log.d(TAG, "sending Broadcast! "
-                            + "|intentAction->" + intentAction
-                            + "|token->" + token
-            );
-
-            Intent mIntent = new Intent();
-            mIntent.setAction(intentAction);
-            mIntent.putExtra("token", token);
-            this.sendBroadcast(mIntent);
-        } catch (Exception ex) {
-            Log.e(TAG, ex.toString(), ex);
-        }
-    }
 }
