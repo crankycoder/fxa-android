@@ -51,7 +51,10 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 10
+        // This needs to be revision 17 to support javascript hackery
+        // to fetch the FxA bearer token
+        minSdkVersion 17
+
         targetSdkVersion 18
 
         applicationId "com.wareninja.android.opensource.oauth2login"

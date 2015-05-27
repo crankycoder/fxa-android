@@ -13,6 +13,7 @@
 
 package com.wareninja.android.opensource.oauth2login.firefox;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,9 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.wareninja.android.opensource.oauth2login.common.AppContext;
 import com.wareninja.android.opensource.oauth2login.common.DialogListener;
-import com.wareninja.android.opensource.oauth2login.common.Utils;
 
 public class FxAOAuthDialog extends Dialog {
 
@@ -98,8 +97,18 @@ public class FxAOAuthDialog extends Dialog {
         mWebView.setHorizontalScrollBarEnabled(false);
         mWebView.setWebViewClient(new FxAOAuthDialog.OAuthWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setSavePassword(false);
+        mWebView.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
         mWebView.getSettings().setDomStorageEnabled(true);
+
+        /* WebViewClient must be set BEFORE calling loadUrl! */
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+             /* This call inject JavaScript into the page which just finished loading. */
+                mWebView.loadUrl("javascript:window.HTMLOUT.showHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+            }
+        });
+
         mWebView.loadUrl(mUrl);
         mWebView.setLayoutParams(FILL);
         mContent.addView(mWebView);
@@ -143,25 +152,31 @@ public class FxAOAuthDialog extends Dialog {
             }
 
             Log.i(TAG, "Redirect to URL: " + url);
-            if (url.startsWith(AppContext.FXA_APP_CALLBACK_OAUTHCALLBACK)) {
-                Bundle values = Utils.parseUrl(url); 
- 
-               
-                String error = values.containsKey("error")?values.getString("error"):null;
-                if (error == null) {
-                    error = values.containsKey("error_type")?values.getString("error_type"):null;
-                }
 
-                if (error == null) {
-                    mListener.onComplete(values);
-                } else if (error.equals("access_denied") ||
-                           error.equals("OAuthAccessDeniedException")) {
-                    mListener.onCancel();
-                } 
-
-                dismiss();
-            } 
         }   
         
+    }
+
+    private class MyJavaScriptInterface {
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public void showHTML(String html)
+        {
+            if (html.contains("\"access_token\"")) {
+                int start = html.indexOf("<body>") + "<body>".length();
+                int end = html.indexOf("</body>");
+                String jsonBlob = html.substring(start, end);
+                // TODO: this HTML string should be the full content of the
+                new AlertDialog.Builder(getContext())
+                        .setTitle("HTML")
+                        .setMessage(jsonBlob)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setCancelable(false)
+                        .create()
+                        .show();
+
+                dismiss();
+            }
+        }
     }
 }
