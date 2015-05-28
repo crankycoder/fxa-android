@@ -51,10 +51,7 @@ android {
     }
 
     defaultConfig {
-        // This needs to be revision 17 to support javascript hackery
-        // to fetch the FxA bearer token
-        minSdkVersion 17
-
+        minSdkVersion 10
         targetSdkVersion 18
 
         applicationId "org.mozilla.firefoxaccounts"
@@ -91,28 +88,6 @@ dependencies {
     compile project(':libraries:fxa')
     testCompile project(':libraries:fxa')
 
-    compile ('com.google.oauth-client:google-oauth-client:1.20.0') {
-        exclude group: 'xpp3', module: 'xpp3'
-        exclude group: 'httpclient', module: 'org.apache.httpcomponents'
-        exclude group: 'junit', module: 'junit'
-        exclude group: 'android', module: 'com.google.android'
-    }
-
-    compile 'com.google.http-client:google-http-client-android:1.20.0'
-
-    // TODO: this can probably be dropped
-    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
-
-    androidTestCompile 'junit:junit:4.10'
-    testCompile        'junit:junit:4.10'
-
-    androidTestCompile 'org.robolectric:robolectric:2.4'
-    testCompile        'org.robolectric:robolectric:2.4'
-
-    androidTestCompile "org.mockito:mockito-core:1.+"
-    testCompile        "org.mockito:mockito-core:1.+"
-
-    compile 'org.slf4j:slf4j-android:1.7.7'
 
     // https://developer.android.com/tools/support-library/features.html
     // In general, we recommend including the v4 support and v7 appcompat

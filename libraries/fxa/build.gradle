@@ -24,14 +24,11 @@ allprojects {
     }
 }
 
-version = "1.7.10"
-group = 'org.mozilla.mozstumbler'
+version = "0.9.0"
+group = 'org.mozilla.accounts.fxa'
 
-// The groupname will be changed into a path for the final library
-// http://dl.bintray.com/crankycoder/libMozStumbler/com/crankycoder/stumbler/0.9.0/
-
-def siteUrl = 'https://github.com/mozilla/MozStumbler'
-def gitUrl = 'https://github.com/mozilla/MozStumbler.git'
+def siteUrl = 'https://github.com/crankycoder/fxa-android'
+def gitUrl = 'https://github.com/crankycoder/fxa-android.git'
 
 android {
     compileSdkVersion 19
@@ -67,11 +64,11 @@ bintray {
     }
     configurations = ['archives']
     pkg {
-        repo = "libMozStumbler"
-        name = "libMozStumbler"
+        repo = "firefoxaccounts"
+        name = "libfxa"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
-        licenses = ["MPL-2.0"]
+        licenses = ["Apache 2.0"]
         publish = true
     }
 }
@@ -87,19 +84,18 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'A simple library to embed Mozilla Stumbler.'
+                name 'Firefox Accounts for Android'
                 url siteUrl
                 licenses {
                     license {
-                        name 'Mozilla Public License, Version 2.0'
-                        url 'https://www.mozilla.org/MPL/2.0/'
+                        name 'Apache 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0'
                     }
                 }
                 developers {
                     developer {
-                        id 'garvankeeley'
-                        name 'Garvan Keeley'
-                        email 'garvankeeley@gmail.com'
+                        id 'WareNinja'
+                        email 'yg@wareninja.com'
                     }
                     developer {
                         id 'crankycoder'
@@ -118,13 +114,21 @@ install {
 }
 
 dependencies {
+
+    compile ('com.google.oauth-client:google-oauth-client:1.20.0') {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'httpclient', module: 'org.apache.httpcomponents'
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'android', module: 'com.google.android'
+    }
+
+    compile 'com.google.http-client:google-http-client-android:1.20.0'
+
+    // TODO: this can probably be dropped
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+
     androidTestCompile 'junit:junit:4.10'
     testCompile        'junit:junit:4.10'
-
-    androidTestCompile  'org.skyscreamer:jsonassert:1.2.3'
-    testCompile         'org.skyscreamer:jsonassert:1.2.3'
-    androidTestCompile  'com.google.code.gson:gson:2.3.1'
-    testCompile         'com.google.code.gson:gson:2.3.1'
 
     androidTestCompile 'org.robolectric:robolectric:2.4'
     testCompile        'org.robolectric:robolectric:2.4'
@@ -132,26 +136,7 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:1.+"
     testCompile        "org.mockito:mockito-core:1.+"
 
-    // https://developer.android.com/tools/support-library/features.html
-    // In general, we recommend including the v4 support and v7 appcompat
-    // libraries, because they support a wide range of Android versions and
-    // provide APIs for recommended user interface patterns.
-
-    compile "com.android.support:support-v4:21.0.+"
-    compile 'com.android.support:appcompat-v7:19.1.0'
-
-    // Acralyzer crash reports
-    compile('ch.acra:acra:4.5.0') {
-        exclude group: 'org.json'
-    }
-
-    // marisa-trie for offline geo support
-    compile 'org.mozilla.mozstumbler.marisa:marisa:0.4'
-
-    // Google Guava.  I'm lazy and want to use collections that aren't
-    // crazy.
-    compile group: 'com.google.guava', name: 'guava', version: '12.0'
-
+    compile 'org.slf4j:slf4j-android:1.7.7'
 }
 
 task sourcesJar(type: Jar) {

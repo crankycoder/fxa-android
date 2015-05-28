@@ -1,16 +1,3 @@
-/***v
-  Licensed under the Apache License, Version 2.0 (the "License"); you may
-  not use this file except in compliance with the License. You may obtain
-  a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
- */
-
-
 package org.mozilla.accounts.fxa;
 
 import android.app.AlertDialog;
@@ -33,7 +20,18 @@ import android.widget.TextView;
 
 public class FxAOAuthDialog extends Dialog {
 
-	private static final String TAG = LOGGING.makeLogTag(FxAOAuthDialog.class);
+    // FxA App params
+    // TODO: these need to be loaded from a Pref
+    // As it is, they're tied to a dev account
+    public static final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
+    public static final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
+    public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
+    public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
+    public static final String FXA_APP_TOKEN_URL = "/token";
+
+
+
+    private static final String TAG = LoggerUtil.makeLogTag(FxAOAuthDialog.class);
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
     static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
@@ -73,6 +71,8 @@ public class FxAOAuthDialog extends Dialog {
         setUpWebView();
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         final float scale = getContext().getResources().getDisplayMetrics().density;
+
+        // TODO: Check orientation some other way than width < height
         float[] dimensions = display.getWidth() < display.getHeight() ?
         		DIMENSIONS_PORTRAIT : DIMENSIONS_LANDSCAPE;
         addContentView(mContent, new FrameLayout.LayoutParams(
@@ -88,7 +88,6 @@ public class FxAOAuthDialog extends Dialog {
         mTitle.setTypeface(Typeface.DEFAULT_BOLD);
         mTitle.setBackgroundColor(BG_COLOR);
         mTitle.setPadding(MARGIN + PADDING, MARGIN, MARGIN, MARGIN);
-
         mContent.addView(mTitle);
     }
 

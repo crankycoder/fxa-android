@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class WebService{
 
-    private static final String TAG = LOGGING.makeLogTag(WebService.class);
+    private static final String TAG = LoggerUtil.makeLogTag(WebService.class);
 
     DefaultHttpClient httpClient;
     HttpContext localContext;
