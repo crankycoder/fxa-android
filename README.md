@@ -1,5 +1,5 @@
 Firefox Accounts for Android
-[![Build Status](https://travis-ci.org/crankycoder/fxa-android.png)](https://travis-ci.org/crankycoder/fxa-android.png)
+[![Build Status](https://travis-ci.org/crankycoder/fxa-android.png)](https://travis-ci.org/crankycoder/fxa-android)
 
 # Building a debug version from command line #
 

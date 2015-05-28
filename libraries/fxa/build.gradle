@@ -64,7 +64,7 @@ bintray {
     }
     configurations = ['archives']
     pkg {
-        repo = "firefoxaccounts"
+        repo = "libMozStumbler"
         name = "libfxa"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
