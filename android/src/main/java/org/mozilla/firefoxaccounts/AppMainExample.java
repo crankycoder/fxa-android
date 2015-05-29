@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.CookieSyncManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.mozilla.accounts.fxa.FxAOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
@@ -30,7 +28,7 @@ public class AppMainExample extends Activity {
     public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/oauth/signin";
 
     // The Authorization server
-    public final String FXA_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
+    public static final String FXA_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
 
     // And finally the callback endpoint on our web application
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
@@ -40,27 +38,20 @@ public class AppMainExample extends Activity {
     private final BroadcastReceiver callbackReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Just capture the intent for testing
-            String jsonBlob = intent.getStringExtra("json");
-            if (jsonBlob == null) {
-                Log.w(LOG_TAG, "error extracting json data");
-                return;
-            }
-            Log.i(LOG_TAG, "Received: " + jsonBlob);
-            try {
-                JSONObject jsonObj = new JSONObject(jsonBlob);
-                /*
+            /*
                 Sample JSON that you might get back
                 {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
                 "token_type":"bearer",
                 "scope":"profile:email",
                 "auth_at":1432917700}
-                 */
-                Log.i(LOG_TAG, "Validated JSON: " + jsonObj.toString());
-            } catch (JSONException jse) {
-                Log.i(LOG_TAG, "Invalid JSON: " + jsonBlob);
-            }
+            */
 
+            String jsonBlob = intent.getStringExtra("json");
+            if (jsonBlob == null) {
+                Log.w(LOG_TAG, "error extracting json data");
+                return;
+            }
+            new RetrieveProfileTask().execute(jsonBlob);
         }
     };
 
@@ -69,12 +60,11 @@ public class AppMainExample extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appmainexample);
 
-        IntentFilter ifilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
+        IntentFilter intentFilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
 
         LocalBroadcastManager
                 .getInstance(getApplicationContext())
-                .registerReceiver(callbackReceiver, ifilter
-                );
+                .registerReceiver(callbackReceiver, intentFilter);
     }
 
     /*
