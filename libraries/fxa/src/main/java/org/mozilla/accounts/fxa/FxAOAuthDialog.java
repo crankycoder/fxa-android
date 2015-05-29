@@ -1,13 +1,14 @@
 package org.mozilla.accounts.fxa;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ public class FxAOAuthDialog extends Dialog {
     public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
     public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
     public static final String FXA_APP_TOKEN_URL = "/token";
-
 
 
     private static final String TAG = LoggerUtil.makeLogTag(FxAOAuthDialog.class);
@@ -119,21 +119,17 @@ public class FxAOAuthDialog extends Dialog {
      This is the final callback
      */
     public void contentCallback(String html) {
-        if (html.contains("\"access_token\"")) {
+        if (html.contains("access_token")) {
             int start = html.indexOf("<body>") + "<body>".length();
             int end = html.indexOf("</body>");
             String jsonBlob = html.substring(start, end);
 
-            // TODO:
-            new AlertDialog.Builder(getContext())
-                    .setTitle("JSON Response")
-                    .setMessage(jsonBlob)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setCancelable(false)
-                    .create()
-                    .show();
-
+            Intent fxaOauthIntent = new Intent(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
+            fxaOauthIntent.putExtra("json", jsonBlob);
             dismiss();
+            LocalBroadcastManager
+                    .getInstance(getContext())
+                    .sendBroadcast(fxaOauthIntent);
         }
     }
 
