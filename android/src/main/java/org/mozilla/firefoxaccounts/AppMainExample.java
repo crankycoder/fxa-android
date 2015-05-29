@@ -13,7 +13,6 @@ import android.webkit.CookieSyncManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.accounts.fxa.DialogListener;
 import org.mozilla.accounts.fxa.FxAOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
@@ -21,6 +20,22 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 public class AppMainExample extends Activity {
 
     private static final String LOG_TAG = LoggerUtil.makeLogTag(AppMainExample.class);
+
+
+    // These secrets are provisioned from the FxA dashboard
+    private final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
+    private final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
+
+    // This is the public facing URL for FxA login
+    public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/oauth/signin";
+
+    // The Authorization server
+    public final String FXA_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
+
+    // And finally the callback endpoint on our web application
+    // Example server endpoint code is available under the `sample_endpoint` subdirectory.
+    public final String FXA_APP_CALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
+
 
     private final BroadcastReceiver callbackReceiver = new BroadcastReceiver() {
         @Override
@@ -34,6 +49,13 @@ public class AppMainExample extends Activity {
             Log.i(LOG_TAG, "Received: " + jsonBlob);
             try {
                 JSONObject jsonObj = new JSONObject(jsonBlob);
+                /*
+                Sample JSON that you might get back
+                {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
+                "token_type":"bearer",
+                "scope":"profile:email",
+                "auth_at":1432917700}
+                 */
                 Log.i(LOG_TAG, "Validated JSON: " + jsonObj.toString());
             } catch (JSONException jse) {
                 Log.i(LOG_TAG, "Invalid JSON: " + jsonBlob);
@@ -47,20 +69,25 @@ public class AppMainExample extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appmainexample);
 
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(callbackReceiver,
-                new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN));
+        IntentFilter ifilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
+
+        LocalBroadcastManager
+                .getInstance(getApplicationContext())
+                .registerReceiver(callbackReceiver, ifilter
+                );
     }
 
+    /*
+     This initiates the FxA login user flow
+     */
     public void onClick_fxaLogin(View v) {
-        String authRequestRedirect = "https://stable.dev.lcip.org/oauth/signin"
-                + "?client_id=" + FxAOAuthDialog.FXA_APP_KEY
-                + "&state=99" // I don't care about state
-                + "&scope=profile:email"
-                + "&redirect_uri=" + FxAOAuthDialog.FXA_APP_CALLBACK_OAUTHCALLBACK;
-
         CookieSyncManager.createInstance(this);
 
-        DialogListener listener = new DialogListener();
-        new FxAOAuthDialog(this, authRequestRedirect, listener).show();
+        new FxAOAuthDialog(this,
+                FXA_SIGNIN_URL,
+                FXA_OAUTH_BASEURL,
+                FXA_APP_CALLBACK,
+                FXA_APP_KEY,
+                FXA_APP_SECRET).show();
     }
 }

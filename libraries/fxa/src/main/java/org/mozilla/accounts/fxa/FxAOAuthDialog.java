@@ -20,16 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class FxAOAuthDialog extends Dialog {
-
-    // FxA App params
-    // TODO: these need to be loaded from a Pref
-    // As it is, they're tied to a dev account
-    public static final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
-    public static final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
-    public static final String FXA_APP_CALLBACK_OAUTHCALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
-    public static final String FXA_APP_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
     public static final String FXA_APP_TOKEN_URL = "/token";
-
 
     private static final String TAG = LoggerUtil.makeLogTag(FxAOAuthDialog.class);
 
@@ -42,6 +33,11 @@ public class FxAOAuthDialog extends Dialog {
     static final int MARGIN = 4;
     static final int PADDING = 2;
 
+    private final String mAppKey;
+    private final String mAppSecret;
+    private final String mAppCallback;
+    private final String mOauthBaseUrl;
+
     private String mUrl;
 
     @SuppressWarnings("unused")
@@ -52,9 +48,26 @@ public class FxAOAuthDialog extends Dialog {
     private LinearLayout mContent;
     private TextView mTitle;
 
-    public FxAOAuthDialog(Context context, String url, DialogListener listener) {
+    public FxAOAuthDialog(Context context,
+                          String signinUrl,
+                          String oauthBaseUrl,
+                          String appCallback,
+                          String AppKey,
+                          String AppSecret) {
         super(context);
-        mUrl = url;
+
+
+        mOauthBaseUrl = oauthBaseUrl;
+        mAppKey = AppKey;
+        mAppSecret = AppSecret;
+        mAppCallback = appCallback;
+        DialogListener listener = new DialogListener(mOauthBaseUrl, mAppKey, mAppSecret);
+
+        mUrl = signinUrl
+                + "?client_id=" + AppKey
+                + "&state=99" // I don't care about state
+                + "&scope=profile:email"
+                + "&redirect_uri=" + mAppCallback;
         mListener = listener;
     }
 
