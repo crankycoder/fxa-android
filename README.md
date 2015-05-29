@@ -13,3 +13,9 @@ ANDROID_HOME, and all traces of your Android SDK from your PATH.
 ./gradlew clean build
 ```
 
+
+This code is originally based off of
+
+https://github.com/wareninja/generic-oauth2-login-for-android/
+
+but has been substantially modified for use with Firefox Accounts.
