@@ -25,7 +25,10 @@ public class AppMainExample extends Activity {
     private final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
 
     // This is the public facing URL for FxA login
-    public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/oauth/signin";
+    public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/";
+
+    // Profile endpoint
+    public static final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
 
     // The Authorization server
     public static final String FXA_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";

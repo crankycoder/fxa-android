@@ -32,7 +32,7 @@ class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
             for (String key: headers.keySet()) {
                 Log.i(LOG_TAG, "Header ["+key+": "+headers.get(key)+"]");
             }
-            String profileUrl=  AppMainExample.FXA_OAUTH_BASEURL + "/profile";
+            String profileUrl=  AppMainExample.FXA_PROFILE_ENDPOINT + "/profile";
             Log.i(LOG_TAG, "Fetching profile from : ["+profileUrl+"]");
             HTTPResponse resp = httpUtil.get(profileUrl, headers);
             JSONObject profileJson = new JSONObject(resp.body());
