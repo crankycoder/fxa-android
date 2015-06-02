@@ -1,4 +1,4 @@
-package org.mozilla.firefoxaccounts;
+package org.mozilla.firefoxaccounts.net;
 
 import org.mozilla.accounts.fxa.LoggerUtil;
 

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefoxaccounts;
+package org.mozilla.firefoxaccounts.tasks;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -10,6 +10,10 @@ import android.util.Log;
 
 import org.json.JSONObject;
 import org.mozilla.accounts.fxa.LoggerUtil;
+import org.mozilla.firefoxaccounts.AppGlobals;
+import org.mozilla.firefoxaccounts.net.HTTPResponse;
+import org.mozilla.firefoxaccounts.net.HttpUtil;
+import org.mozilla.firefoxaccounts.Prefs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +41,8 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
         try {
             prefs.setBearerToken(bearerToken);
 
-            HttpUtil httpUtil = new HttpUtil("some-user-agent");
+            HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent")  + " " +
+                    AppGlobals.appName + "/" + AppGlobals.appVersionName);
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Authorization", "Bearer " + bearerToken);

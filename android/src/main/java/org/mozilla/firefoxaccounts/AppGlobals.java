@@ -4,11 +4,10 @@
 
 package org.mozilla.firefoxaccounts;
 
-public class ProdRetrieveProfileTask extends DevRetrieveProfileTask {
-    // Profile endpoint
+public class AppGlobals {
 
-    @Override
-    protected String getFxaProfileEndpoint() {
-        return "https://profile.accounts.firefox.com/v1";
-    }
+    public static String appVersionName;
+    public static int appVersionCode;
+    public static String appName;
 }
+

@@ -17,9 +17,10 @@ import org.json.JSONObject;
 import org.mozilla.accounts.fxa.DevOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
+import org.mozilla.firefoxaccounts.tasks.DevRetrieveProfileTask;
 
-public class AppMainExample extends Activity {
-    private static final String LOG_TAG = LoggerUtil.makeLogTag(AppMainExample.class);
+public class MainApp extends Activity {
+    private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
 
     // These secrets are provisioned from the FxA dashboard
     private final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
@@ -62,6 +63,11 @@ public class AppMainExample extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Prefs.createInstance(getApplicationContext());
+
+        AppGlobals.appVersionName = BuildConfig.VERSION_NAME;
+        AppGlobals.appVersionCode = BuildConfig.VERSION_CODE;
+        AppGlobals.appName = this.getResources().getString(R.string.app_name);
+
 
         setContentView(R.layout.appmainexample);
 
