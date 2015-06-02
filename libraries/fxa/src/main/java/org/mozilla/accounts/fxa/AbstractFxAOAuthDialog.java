@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -135,6 +136,9 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
             LocalBroadcastManager
                     .getInstance(getContext())
                     .sendBroadcast(fxaOauthIntent);
+
+            // Wipe down all the DOM storage
+            WebStorage.getInstance().deleteAllData();
         }
     }
 
