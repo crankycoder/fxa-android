@@ -24,7 +24,7 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
                                   String appCallback,
                                   String[] scopes,
                                   String AppKey) {
-        super(context, android.R.style.Theme_Light);
+        super(context, android.R.style.Theme_DeviceDefault_NoActionBar);
         // Wipe down all the DOM storage
         WebStorage.getInstance().deleteAllData();
 
@@ -43,7 +43,6 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
         super.onCreate(savedInstanceState);
         mContent = new LinearLayout(getContext());
         mContent.setOrientation(LinearLayout.VERTICAL);
-        setTitle("Firefox Accounts");
         setUpWebView();
         setContentView(mContent);
     }
