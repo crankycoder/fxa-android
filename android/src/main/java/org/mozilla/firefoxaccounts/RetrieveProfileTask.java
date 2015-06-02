@@ -16,12 +16,10 @@ import java.util.Map;
 class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
 
     private static final String LOG_TAG = LoggerUtil.makeLogTag(RetrieveProfileTask.class);
-    private final String fxaProfileEndpoint;
 
-    public RetrieveProfileTask(String profileEndpoint) {
-        super();
-        fxaProfileEndpoint = profileEndpoint;
-    }
+    // Profile endpoint
+    public final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
+
     protected JSONObject doInBackground(String... jsonBlobs) {
         try {
             String jsonBlob = jsonBlobs[0];
@@ -37,7 +35,7 @@ class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
             for (String key: headers.keySet()) {
                 Log.i(LOG_TAG, "Header ["+key+": "+headers.get(key)+"]");
             }
-            String profileUrl=  fxaProfileEndpoint + "/profile";
+            String profileUrl=  FXA_PROFILE_ENDPOINT + "/profile";
             Log.i(LOG_TAG, "Fetching profile from : ["+profileUrl+"]");
             HTTPResponse resp = httpUtil.get(profileUrl, headers);
             JSONObject profileJson = new JSONObject(resp.body());

@@ -19,8 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class FxAOAuthDialog extends Dialog {
-    private static final String TAG = LoggerUtil.makeLogTag(FxAOAuthDialog.class);
+public abstract class AbstractFxAOAuthDialog extends Dialog {
+    private static final String TAG = LoggerUtil.makeLogTag(AbstractFxAOAuthDialog.class);
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
     static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
@@ -41,10 +41,10 @@ public class FxAOAuthDialog extends Dialog {
     private LinearLayout mContent;
     private TextView mTitle;
 
-    public FxAOAuthDialog(Context context,
-                          String signinUrl,
-                          String appCallback,
-                          String AppKey) {
+    public AbstractFxAOAuthDialog(Context context,
+                                  String signinUrl,
+                                  String appCallback,
+                                  String AppKey) {
         super(context);
         mAppCallback = appCallback;
 
@@ -92,7 +92,7 @@ public class FxAOAuthDialog extends Dialog {
         mWebView = new WebView(getContext());
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-        mWebView.setWebViewClient(new FxAOAuthDialog.OAuthWebViewClient());
+        mWebView.setWebViewClient(new AbstractFxAOAuthDialog.OAuthWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.addJavascriptInterface(new ContentViewer(this), "HTMLOUT");
         mWebView.getSettings().setDomStorageEnabled(true);
@@ -136,7 +136,7 @@ public class FxAOAuthDialog extends Dialog {
         public void onReceivedError(WebView view, int errorCode,
                 String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            FxAOAuthDialog.this.dismiss();
+            AbstractFxAOAuthDialog.this.dismiss();
         }
 
         @Override
@@ -171,9 +171,9 @@ public class FxAOAuthDialog extends Dialog {
 
     private class ContentViewer {
 
-        private final FxAOAuthDialog myCallback;
+        private final AbstractFxAOAuthDialog myCallback;
 
-        ContentViewer(FxAOAuthDialog callback) {
+        ContentViewer(AbstractFxAOAuthDialog callback) {
             myCallback = callback;
         }
         @SuppressWarnings("unused")

@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.CookieSyncManager;
 
-import org.mozilla.accounts.fxa.FxAOAuthDialog;
+import org.mozilla.accounts.fxa.DevOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 
@@ -20,12 +20,6 @@ public class AppMainExample extends Activity {
 
     // These secrets are provisioned from the FxA dashboard
     private final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
-
-    // This is the public facing URL for FxA login
-    public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/";
-
-    // Profile endpoint
-    public final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
 
     // And finally the callback endpoint on our web application
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
@@ -48,7 +42,7 @@ public class AppMainExample extends Activity {
                 Log.w(LOG_TAG, "error extracting json data");
                 return;
             }
-            new RetrieveProfileTask(FXA_PROFILE_ENDPOINT).execute(jsonBlob);
+            new RetrieveProfileTask().execute(jsonBlob);
         }
     };
 
@@ -70,8 +64,7 @@ public class AppMainExample extends Activity {
     public void onClick_fxaLogin(View v) {
         CookieSyncManager.createInstance(this);
 
-        new FxAOAuthDialog(this,
-                FXA_SIGNIN_URL,
+        new DevOAuthDialog(this,
                 FXA_APP_CALLBACK,
                 FXA_APP_KEY).show();
     }
