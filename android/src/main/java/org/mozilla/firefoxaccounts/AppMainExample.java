@@ -85,7 +85,7 @@ public class AppMainExample extends Activity {
         // If you add an scope that is not on that list, the login screen will hang instead
         // of going to the final redirect.  No user visible error occurs. This is terrible.
         // https://github.com/mozilla/fxa-content-server/issues/2508
-        String[] scopes = new String[] {"profile:email", "profile:display_name"};
+        String[] scopes = new String[] {"profile:email", "profile:display_name", "profile:display_name:write"};
         new DevOAuthDialog(this,
                 FXA_APP_CALLBACK,
                 scopes,
