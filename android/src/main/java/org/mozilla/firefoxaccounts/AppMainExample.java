@@ -16,22 +16,16 @@ import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 
 public class AppMainExample extends Activity {
-
     private static final String LOG_TAG = LoggerUtil.makeLogTag(AppMainExample.class);
-
 
     // These secrets are provisioned from the FxA dashboard
     private final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
-    private final String FXA_APP_SECRET = "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af";
 
     // This is the public facing URL for FxA login
     public final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/";
 
     // Profile endpoint
-    public static final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
-
-    // The Authorization server
-    public static final String FXA_OAUTH_BASEURL = "https://oauth-stable.dev.lcip.org/v1";
+    public final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
 
     // And finally the callback endpoint on our web application
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
@@ -54,7 +48,7 @@ public class AppMainExample extends Activity {
                 Log.w(LOG_TAG, "error extracting json data");
                 return;
             }
-            new RetrieveProfileTask().execute(jsonBlob);
+            new RetrieveProfileTask(FXA_PROFILE_ENDPOINT).execute(jsonBlob);
         }
     };
 
@@ -78,9 +72,7 @@ public class AppMainExample extends Activity {
 
         new FxAOAuthDialog(this,
                 FXA_SIGNIN_URL,
-                FXA_OAUTH_BASEURL,
                 FXA_APP_CALLBACK,
-                FXA_APP_KEY,
-                FXA_APP_SECRET).show();
+                FXA_APP_KEY).show();
     }
 }

@@ -20,8 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class FxAOAuthDialog extends Dialog {
-    public static final String FXA_APP_TOKEN_URL = "/token";
-
     private static final String TAG = LoggerUtil.makeLogTag(FxAOAuthDialog.class);
 
     static final int BG_COLOR = Color.LTGRAY;//0xFF6D84B4;
@@ -33,15 +31,10 @@ public class FxAOAuthDialog extends Dialog {
     static final int MARGIN = 4;
     static final int PADDING = 2;
 
-    private final String mAppKey;
-    private final String mAppSecret;
     private final String mAppCallback;
-    private final String mOauthBaseUrl;
 
     private String mUrl;
 
-    @SuppressWarnings("unused")
-    private DialogListener mListener;
 
     private ProgressDialog mSpinner;
     private WebView mWebView;
@@ -50,25 +43,16 @@ public class FxAOAuthDialog extends Dialog {
 
     public FxAOAuthDialog(Context context,
                           String signinUrl,
-                          String oauthBaseUrl,
                           String appCallback,
-                          String AppKey,
-                          String AppSecret) {
+                          String AppKey) {
         super(context);
-
-
-        mOauthBaseUrl = oauthBaseUrl;
-        mAppKey = AppKey;
-        mAppSecret = AppSecret;
         mAppCallback = appCallback;
-        DialogListener listener = new DialogListener(mOauthBaseUrl, mAppKey, mAppSecret);
 
         mUrl = signinUrl
                 + "?client_id=" + AppKey
                 + "&state=99" // I don't care about state
                 + "&scope=profile:email"
                 + "&redirect_uri=" + mAppCallback;
-        mListener = listener;
     }
 
     @Override
@@ -182,8 +166,7 @@ public class FxAOAuthDialog extends Dialog {
 
             Log.i(TAG, "Redirect to URL: " + url);
 
-        }   
-        
+        }
     }
 
     private class ContentViewer {
