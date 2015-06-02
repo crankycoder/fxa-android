@@ -164,8 +164,8 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
                 mTitle.setText(title);
             }
           
-            try {// to avoid crashing the app add try-catch block, avoid this stupid crash!
-	            if (mSpinner!=null && mSpinner.isShowing())// by YG
+            try {
+	            if (mSpinner!=null && mSpinner.isShowing())
 	            	mSpinner.dismiss();
             }
             catch (Exception ex) {
