@@ -5,6 +5,7 @@
 package org.mozilla.firefoxaccounts;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -13,19 +14,29 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
+/*
+   Instantiate this task with the bearer token
+ */
+public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
 
-    private static final String LOG_TAG = LoggerUtil.makeLogTag(RetrieveProfileTask.class);
+    private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractRetrieveProfileTask.class);
 
-    // Profile endpoint
-    public final String FXA_PROFILE_ENDPOINT = "https://stable.dev.lcip.org/profile/v1";
+    protected JSONObject doInBackground(String... strings) {
+        if (strings.length == 0 || TextUtils.isEmpty(strings[0])) {
+            return null;
+        }
+        return getUserProfile(strings[0]);
+    }
 
-    protected JSONObject doInBackground(String... jsonBlobs) {
+    // This must be overloaded by subclasses
+    protected abstract String getFxaProfileEndpoint();
+
+    private JSONObject getUserProfile(String bearerToken) {
+        Prefs prefs = Prefs.getInstance();
+
         try {
-            String jsonBlob = jsonBlobs[0];
-            Log.i(LOG_TAG, "Raw JSON blog: ["+jsonBlob+"]");
-            JSONObject jsonObj = new JSONObject(jsonBlob);
-            String bearerToken = jsonObj.getString("access_token");
+            prefs.setBearerToken(bearerToken);
+
             HttpUtil httpUtil = new HttpUtil("some-user-agent");
 
             Map<String, String> headers = new HashMap<String, String>();
@@ -35,10 +46,12 @@ class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
             for (String key: headers.keySet()) {
                 Log.i(LOG_TAG, "Header ["+key+": "+headers.get(key)+"]");
             }
-            String profileUrl=  FXA_PROFILE_ENDPOINT + "/profile";
+            String profileUrl=  getFxaProfileEndpoint() + "/profile";
             Log.i(LOG_TAG, "Fetching profile from : ["+profileUrl+"]");
             HTTPResponse resp = httpUtil.get(profileUrl, headers);
             JSONObject profileJson = new JSONObject(resp.body());
+            String email = profileJson.getString("email");
+            prefs.setEmail(email);
 
             Log.i(LOG_TAG, "Profile response body: " +profileJson);
             return profileJson;
@@ -48,9 +61,4 @@ class RetrieveProfileTask extends AsyncTask<String, Void, JSONObject> {
         }
     }
 
-    protected void onPostExecute(JSONObject profileJson) {
-
-        // TODO: check this.exception
-        // TODO: do something with the feed
-    }
 }

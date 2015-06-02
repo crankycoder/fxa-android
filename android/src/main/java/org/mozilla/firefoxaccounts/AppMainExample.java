@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mozilla.accounts.fxa.DevOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
@@ -42,13 +45,24 @@ public class AppMainExample extends Activity {
                 Log.w(LOG_TAG, "error extracting json data");
                 return;
             }
-            new RetrieveProfileTask().execute(jsonBlob);
+            JSONObject authJSON = null;
+            try {
+                authJSON = new JSONObject(jsonBlob);
+                Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
+                String bearerToken = authJSON.getString("access_token");
+                Prefs.getInstance().setBearerToken(bearerToken);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Error fetching bearer token. JSON = ["+authJSON+"]", e);
+            }
+            new DevRetrieveProfileTask().execute(Prefs.getInstance().getBearerToken());
         }
     };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Prefs.createInstance(getApplicationContext());
+
         setContentView(R.layout.appmainexample);
 
         IntentFilter intentFilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
@@ -62,10 +76,19 @@ public class AppMainExample extends Activity {
      This initiates the FxA login user flow
      */
     public void onClick_fxaLogin(View v) {
-        CookieSyncManager.createInstance(this);
+        CookieSyncManager cookies = CookieSyncManager.createInstance(this);
+        CookieManager.getInstance().removeAllCookie();
+        CookieManager.getInstance().removeSessionCookie();
+        cookies.sync();
 
+        // Only untrusted scopes can go here for now.
+        // If you add an scope that is not on that list, the login screen will hang instead
+        // of going to the final redirect.  No user visible error occurs. This is terrible.
+        // https://github.com/mozilla/fxa-content-server/issues/2508
+        String[] scopes = new String[] {"profile:email", "profile:display_name"};
         new DevOAuthDialog(this,
                 FXA_APP_CALLBACK,
+                scopes,
                 FXA_APP_KEY).show();
     }
 }
