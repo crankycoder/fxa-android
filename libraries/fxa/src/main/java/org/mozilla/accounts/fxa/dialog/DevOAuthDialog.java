@@ -2,9 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.accounts.fxa;
+package org.mozilla.accounts.fxa.dialog;
 
 import android.content.Context;
+
+import org.mozilla.accounts.fxa.dialog.base.AbstractFxAOAuthDialog;
 
 public class DevOAuthDialog extends AbstractFxAOAuthDialog {
     // This is the public facing URL for FxA login

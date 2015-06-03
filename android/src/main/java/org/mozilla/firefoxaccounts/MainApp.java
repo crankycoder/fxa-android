@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -14,10 +15,13 @@ import android.webkit.CookieSyncManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.accounts.fxa.DevOAuthDialog;
+import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
-import org.mozilla.firefoxaccounts.tasks.DevRetrieveProfileTask;
+import org.mozilla.accounts.fxa.Prefs;
+import org.mozilla.accounts.fxa.net.AppGlobals;
+import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
+import org.mozilla.accounts.fxa.tasks.ProfileJson;
 
 public class MainApp extends Activity {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
@@ -55,7 +59,9 @@ public class MainApp extends Activity {
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "Error fetching bearer token. JSON = ["+authJSON+"]", e);
             }
-            new DevRetrieveProfileTask().execute(Prefs.getInstance().getBearerToken());
+
+            DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
+            AsyncTask<String, Void, ProfileJson> profileJson = task.execute(Prefs.getInstance().getBearerToken());
         }
     };
 
@@ -64,6 +70,7 @@ public class MainApp extends Activity {
         super.onCreate(savedInstanceState);
         Prefs.createInstance(getApplicationContext());
 
+        // Clobber the AppGlobals so that the user-agent for the FxA client will be sensible
         AppGlobals.appVersionName = BuildConfig.VERSION_NAME;
         AppGlobals.appVersionCode = BuildConfig.VERSION_CODE;
         AppGlobals.appName = this.getResources().getString(R.string.app_name);
@@ -71,7 +78,7 @@ public class MainApp extends Activity {
 
         setContentView(R.layout.appmainexample);
 
-        IntentFilter intentFilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
+        IntentFilter intentFilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
 
         LocalBroadcastManager
                 .getInstance(getApplicationContext())

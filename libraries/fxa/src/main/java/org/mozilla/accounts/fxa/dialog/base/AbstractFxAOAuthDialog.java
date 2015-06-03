@@ -1,4 +1,4 @@
-package org.mozilla.accounts.fxa;
+package org.mozilla.accounts.fxa.dialog.base;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -10,6 +10,9 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+
+import org.mozilla.accounts.fxa.Intents;
+import org.mozilla.accounts.fxa.LoggerUtil;
 
 public abstract class AbstractFxAOAuthDialog extends Dialog {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractFxAOAuthDialog.class);
@@ -77,7 +80,7 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
             int end = html.indexOf("</body>");
             String jsonBlob = html.substring(start, end);
 
-            Intent fxaOauthIntent = new Intent(Intents.ORG_MOZILLA_ACCOUNTS_FXA_SIGNIN_TOKEN);
+            Intent fxaOauthIntent = new Intent(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
             fxaOauthIntent.putExtra("json", jsonBlob);
             dismiss();
             LocalBroadcastManager

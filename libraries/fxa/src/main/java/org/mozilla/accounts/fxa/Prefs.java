@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefoxaccounts;
+package org.mozilla.accounts.fxa;
 
 
 import android.annotation.SuppressLint;
@@ -12,8 +12,6 @@ import android.content.SharedPreferences;
 import android.os.Build.VERSION;
 import android.text.TextUtils;
 import android.util.Log;
-
-import org.mozilla.accounts.fxa.LoggerUtil;
 
 public class Prefs {
 
