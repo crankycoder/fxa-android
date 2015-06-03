@@ -1,3 +1,15 @@
+// each of the version numbers must be 0-99
+def versionMajor = 0 
+def versionMinor = 9 // minor feature releases
+def versionPatch = 2 // This should be bumped for hot fixes
+
+// Double check the versioning
+for (versionPart in [versionPatch, versionMinor, versionMajor]) {
+    assert 0 <= versionPart
+    assert versionPart <= 99
+}
+
+
 buildscript {
     repositories {
         jcenter()
@@ -24,7 +36,7 @@ allprojects {
     }
 }
 
-version = "0.9.1"
+version "${versionMajor}.${versionMinor}.${versionPatch}"
 group = 'org.mozilla.accounts.fxa'
 
 def siteUrl = 'https://github.com/crankycoder/fxa-android'
