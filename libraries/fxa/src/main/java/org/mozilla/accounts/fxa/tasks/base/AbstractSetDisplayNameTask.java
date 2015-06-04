@@ -12,9 +12,9 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
-import org.mozilla.accounts.fxa.net.AppGlobals;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
 import org.mozilla.accounts.fxa.tasks.ProfileJson;
@@ -59,7 +59,7 @@ public abstract class AbstractSetDisplayNameTask extends AbstractRetrieveProfile
 
 
         HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent")  + " " +
-                AppGlobals.appName + "/" + AppGlobals.appVersionName);
+                FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Authorization", "Bearer " + bearerToken);

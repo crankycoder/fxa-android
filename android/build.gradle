@@ -85,12 +85,12 @@ androidUnitTest {
 
 dependencies {
     // Uncomment these for dev work
-    // compile project(':libraries:fxa')
-    // testCompile project(':libraries:fxa')
+    compile project(':libraries:fxa')
+    testCompile project(':libraries:fxa')
 
     // Uncomment this for release builds
-    compile 'org.mozilla.accounts.fxa:fxa:0.9.2'
-    testCompile 'org.mozilla.accounts.fxa:fxa:0.9.2'
+    //compile 'org.mozilla.accounts.fxa:fxa:0.9.2'
+    //testCompile 'org.mozilla.accounts.fxa:fxa:0.9.2'
 
     // https://developer.android.com/tools/support-library/features.html
     // In general, we recommend including the v4 support and v7 appcompat

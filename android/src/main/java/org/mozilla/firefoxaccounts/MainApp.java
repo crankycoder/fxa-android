@@ -15,11 +15,11 @@ import android.webkit.CookieSyncManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
+import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.Prefs;
-import org.mozilla.accounts.fxa.net.AppGlobals;
+import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
 import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.ProfileJson;
 
@@ -61,7 +61,7 @@ public class MainApp extends Activity {
             }
 
             DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
-            AsyncTask<String, Void, ProfileJson> profileJson = task.execute(Prefs.getInstance().getBearerToken());
+            task.execute(Prefs.getInstance().getBearerToken());
         }
     };
 
@@ -70,11 +70,8 @@ public class MainApp extends Activity {
         super.onCreate(savedInstanceState);
         Prefs.createInstance(getApplicationContext());
 
-        // Clobber the AppGlobals so that the user-agent for the FxA client will be sensible
-        AppGlobals.appVersionName = BuildConfig.VERSION_NAME;
-        AppGlobals.appVersionCode = BuildConfig.VERSION_CODE;
-        AppGlobals.appName = this.getResources().getString(R.string.app_name);
-
+        String app_name = getResources().getString(R.string.app_name);
+        FxAGlobals.initFxaLogin(this, app_name);
 
         setContentView(R.layout.appmainexample);
 

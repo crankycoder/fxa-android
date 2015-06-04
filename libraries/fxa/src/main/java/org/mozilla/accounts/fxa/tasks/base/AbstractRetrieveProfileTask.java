@@ -12,10 +12,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONObject;
+import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.Prefs;
-import org.mozilla.accounts.fxa.net.AppGlobals;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
 import org.mozilla.accounts.fxa.tasks.ProfileJson;
@@ -42,7 +42,7 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
 
     HttpUtil getHttpUtil() {
         return new HttpUtil(System.getProperty("http.agent")  + " " +
-                AppGlobals.appName + "/" + AppGlobals.appVersionName);
+                FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
     }
 
     protected ProfileJson doInBackground(String... strings) {
