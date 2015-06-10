@@ -39,7 +39,7 @@ public class Prefs {
     }
 
     private Prefs(Context context) {
-        mSharedPrefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_MULTI_PROCESS | Context.MODE_PRIVATE);
+        mSharedPrefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
     }
 
     @TargetApi(9)

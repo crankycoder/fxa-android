@@ -1,7 +1,7 @@
 // each of the version numbers must be 0-99
 def versionMajor = 0 
 def versionMinor = 9 // minor feature releases
-def versionPatch = 3 // This should be bumped for hot fixes
+def versionPatch = 4 // This should be bumped for hot fixes
 
 // Double check the versioning
 for (versionPart in [versionPatch, versionMinor, versionMajor]) {
@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 18
+        minSdkVersion 18
+        targetSdkVersion 19
     }
 
     lintOptions {
@@ -143,7 +143,7 @@ dependencies {
     // libraries, because they support a wide range of Android versions and
     // provide APIs for recommended user interface patterns.
 
-    compile 'com.android.support:support-v4:21.0.+'
+    compile "com.android.support:support-v4:19.0.+"
     compile 'com.android.support:appcompat-v7:19.1.0'
     testCompile 'com.android.support:support-v4:21.0.+'
     testCompile 'com.android.support:appcompat-v7:19.1.0'
