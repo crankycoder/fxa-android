@@ -17,6 +17,7 @@ import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
+import org.mozilla.accounts.fxa.net.Zipper;
 import org.mozilla.accounts.fxa.tasks.ProfileJson;
 
 import java.util.HashMap;
@@ -69,16 +70,19 @@ public abstract class AbstractSetDisplayNameTask extends AbstractRetrieveProfile
 
         JSONObject blob = new JSONObject();
         try {
-            blob.put("display_name", displayName);
+            blob.put("displayName", displayName);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error setting display_name: ["+displayName+"]", e);
             return null;
         }
 
-        HTTPResponse resp = httpUtil.post(displayNameUrl, blob.toString().getBytes(), headers);
+        HTTPResponse resp = httpUtil.post(displayNameUrl,
+                Zipper.zipData(blob.toString().getBytes()),
+                headers);
         if (resp.isSuccessCode2XX()) {
             return getUserProfile(bearerToken);
         } else {
+            Log.e(LOG_TAG, resp.body());
             return null;
         }
     }
@@ -87,11 +91,12 @@ public abstract class AbstractSetDisplayNameTask extends AbstractRetrieveProfile
     protected void onPostExecute (ProfileJson result) {
         if (result == null) {
             Intent intent = new Intent(org.mozilla.accounts.fxa.Intents.PROFILE_UPDATE_FAILURE);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             return;
         }
         Intent intent = new Intent(Intents.PROFILE_UPDATE);
         intent.putExtra("json", result.toString());
-        LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 }
+

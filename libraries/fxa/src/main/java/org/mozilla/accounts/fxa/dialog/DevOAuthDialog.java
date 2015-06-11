@@ -10,7 +10,7 @@ import org.mozilla.accounts.fxa.dialog.base.AbstractFxAOAuthDialog;
 
 public class DevOAuthDialog extends AbstractFxAOAuthDialog {
     // This is the public facing URL for FxA login
-    public static final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/";
+    public static final String FXA_SIGNIN_URL = "https://stable.dev.lcip.org/signin";
 
     public DevOAuthDialog(Context context, String appCallback, String[] scopes, String AppKey) {
         super(context, FXA_SIGNIN_URL, appCallback, scopes, AppKey);

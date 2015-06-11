@@ -18,7 +18,12 @@ import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
+import org.mozilla.accounts.fxa.tasks.DevDestroyOAuthTask;
 import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
+import org.mozilla.accounts.fxa.tasks.DevSetDisplayNameTask;
+import org.mozilla.accounts.fxa.tasks.DevVerifyOAuthTask;
+
+import java.util.Random;
 
 public class MainApp extends Activity {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
@@ -30,39 +35,68 @@ public class MainApp extends Activity {
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
     public final String FXA_APP_CALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
 
+    static String BEARER_TOKEN = null;
 
     private final BroadcastReceiver callbackReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN)) {
-            /*
-                Sample JSON that you might get back
-                {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
-                "token_type":"bearer",
-                "scope":"profile:email",
-                "auth_at":1432917700}
-            */
-
-                String jsonBlob = intent.getStringExtra("json");
-                if (jsonBlob == null) {
-                    Log.w(LOG_TAG, "error extracting json data");
-                    return;
-                }
-                JSONObject authJSON = null;
-                try {
-                    authJSON = new JSONObject(jsonBlob);
-                    Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
-                    String bearerToken = authJSON.getString("access_token");
-                    DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
-                    task.execute(bearerToken);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", e);
-                }
+                processBearerToken(intent);
             } else if (intent.getAction().equals(Intents.PROFILE_READ)) {
-                String jsonBlob = intent.getStringExtra("json");
-                Log.i(LOG_TAG, "Profile response body: " + jsonBlob);
+                processProfile(intent);
+            } else if (intent.getAction().equals(Intents.OAUTH_VERIFY)) {
+                Log.i(LOG_TAG, "OAuth verification success! Requesting logout.");
+                DevSetDisplayNameTask task = new DevSetDisplayNameTask(getApplicationContext());
+                task.execute(BEARER_TOKEN, Integer.toString((new Random()).nextInt(2000)));
+            } else if (intent.getAction().equals(Intents.OAUTH_VERIFY_FAIL)) {
+                Log.i(LOG_TAG, "OAuth verification failure!");
+            } else if (intent.getAction().equals(Intents.OAUTH_DESTROY)) {
+                Log.i(LOG_TAG, "OAuth destruction of bearer token succeeded!");
+            } else if (intent.getAction().equals(Intents.OAUTH_DESTROY_FAIL)) {
+                Log.i(LOG_TAG, "OAuth destruction of bearer token failed");
+            } else if (intent.getAction().equals(Intents.PROFILE_UPDATE)) {
+                Log.i(LOG_TAG, "Display name was updated!");
+                DevDestroyOAuthTask task = new DevDestroyOAuthTask(getApplicationContext());
+                task.execute(BEARER_TOKEN);
+            } else if (intent.getAction().equals(Intents.PROFILE_UPDATE_FAILURE)) {
+                Log.i(LOG_TAG, "Display name was update failed!");
             } else {
                 Log.w(LOG_TAG, "Unexpected intent: " + intent);
+            }
+        }
+
+        private void processProfile(Intent intent) {
+            String jsonBlob = intent.getStringExtra("json");
+            Log.i(LOG_TAG, "Profile response body: " + jsonBlob);
+
+            // Fire off the verify OAuth task
+            DevVerifyOAuthTask task = new DevVerifyOAuthTask(getApplicationContext());
+            task.execute(BEARER_TOKEN);
+        }
+
+        private void processBearerToken(Intent intent) {
+    /*
+        Sample JSON that you might get back
+        {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
+        "token_type":"bearer",
+        "scope":"profile:email",
+        "auth_at":1432917700}
+    */
+
+            String jsonBlob = intent.getStringExtra("json");
+            if (jsonBlob == null) {
+                Log.w(LOG_TAG, "error extracting json data");
+                return;
+            }
+            JSONObject authJSON = null;
+            try {
+                authJSON = new JSONObject(jsonBlob);
+                Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
+                BEARER_TOKEN = authJSON.getString("access_token");
+                DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
+                task.execute(BEARER_TOKEN);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", e);
             }
         }
     };
@@ -78,8 +112,19 @@ public class MainApp extends Activity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
+
         intentFilter.addAction(Intents.PROFILE_READ);
         intentFilter.addAction(Intents.PROFILE_READ_FAILURE);
+
+        intentFilter.addAction(Intents.OAUTH_VERIFY);
+        intentFilter.addAction(Intents.OAUTH_VERIFY_FAIL);
+
+        intentFilter.addAction(Intents.OAUTH_DESTROY);
+        intentFilter.addAction(Intents.OAUTH_DESTROY_FAIL);
+
+        intentFilter.addAction(Intents.PROFILE_UPDATE);
+        intentFilter.addAction(Intents.PROFILE_UPDATE_FAILURE);
+
 
         LocalBroadcastManager
                 .getInstance(getApplicationContext())

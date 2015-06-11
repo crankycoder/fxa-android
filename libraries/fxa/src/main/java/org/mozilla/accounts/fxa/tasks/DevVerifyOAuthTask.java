@@ -17,6 +17,7 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
+import org.mozilla.accounts.fxa.net.Zipper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,9 @@ import java.util.Map;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY_FAIL;
 
-@SuppressWarnings("unused")
+/*
+ This class verifies that a particular bearer token is still valid.
+ */
 public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
     private static final String LOG_TAG = LoggerUtil.makeLogTag(DevVerifyOAuthTask.class);
@@ -48,11 +51,13 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
     }
 
     public JSONObject verify(String bearerToken) {
+
+        Log.i(LOG_TAG, "Verifying bearer token: ["+bearerToken+"]");
+
         if (TextUtils.isEmpty(bearerToken)) {
             Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
             return null;
         }
-
 
         HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent")  + " " +
                 FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
@@ -70,7 +75,7 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
             return null;
         }
 
-        HTTPResponse resp = httpUtil.post(displayNameUrl, blob.toString().getBytes(), headers);
+        HTTPResponse resp = httpUtil.post(displayNameUrl, Zipper.zipData(blob.toString().getBytes()), headers);
         if (resp.isSuccessCode2XX()) {
             try {
                 return new JSONObject(resp.body());
@@ -79,6 +84,8 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
                 return null;
             }
         } else {
+            Log.i(LOG_TAG, "Got http status code: " + resp.httpStatusCode());
+            Log.i(LOG_TAG, "Got http response: " + resp.body());
             return null;
         }
     }
@@ -87,11 +94,11 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
     protected void onPostExecute (JSONObject result) {
         if (result == null) {
             Intent intent = new Intent(OAUTH_VERIFY_FAIL);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         } else {
             Intent intent = new Intent(OAUTH_VERIFY);
             intent.putExtra("json", result.toString());
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }
     }
 

@@ -19,7 +19,7 @@ public class ProfileJson {
     }
 
     public String getDisplayName() {
-        return profileObj.optString("display_name");
+        return profileObj.optString("displayName");
     }
 
     public String toString() {

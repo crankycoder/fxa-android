@@ -17,6 +17,7 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
+import org.mozilla.accounts.fxa.net.Zipper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,6 @@ import java.util.Map;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY_FAIL;
 
-@SuppressWarnings("unused")
 public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
 
     private static final String LOG_TAG = LoggerUtil.makeLogTag(DevDestroyOAuthTask.class);
@@ -41,6 +41,7 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... strings) {
         if (strings.length != 1 || TextUtils.isEmpty(strings[0])) {
+            Log.i(LOG_TAG, "Missing bearer token for DestroyOAuth");
             return false;
         }
 
@@ -52,7 +53,6 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
             Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
             return false;
         }
-
 
         HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent")  + " " +
                 FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
@@ -70,7 +70,10 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
             return false;
         }
 
-        HTTPResponse resp = httpUtil.post(displayNameUrl, blob.toString().getBytes(), headers);
+        HTTPResponse resp = httpUtil.post(displayNameUrl,
+                Zipper.zipData(blob.toString().getBytes()),
+                headers);
+        Log.i(LOG_TAG, "Destroy status: " + resp.httpStatusCode() + " body: " + resp.body());
         return resp.isSuccessCode2XX();
 
     }
@@ -78,11 +81,11 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
     @Override
     protected void onPostExecute (Boolean result) {
         if (result) {
-            Intent intent = new Intent(OAUTH_DESTROY_FAIL);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
-        } else {
             Intent intent = new Intent(OAUTH_DESTROY);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+        } else {
+            Intent intent = new Intent(OAUTH_DESTROY_FAIL);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }
     }
 

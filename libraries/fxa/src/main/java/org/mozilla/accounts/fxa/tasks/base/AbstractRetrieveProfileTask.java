@@ -77,7 +77,7 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
     protected void onPostExecute(ProfileJson result) {
         if (result == null) {
             Intent intent = new Intent(Intents.PROFILE_READ_FAILURE);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             return;
         }
         Intent intent = new Intent(Intents.PROFILE_READ);
