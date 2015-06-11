@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
-import org.mozilla.accounts.fxa.Prefs;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
 import org.mozilla.accounts.fxa.tasks.ProfileJson;
@@ -41,7 +40,7 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
     }
 
     HttpUtil getHttpUtil() {
-        return new HttpUtil(System.getProperty("http.agent")  + " " +
+        return new HttpUtil(System.getProperty("http.agent") + " " +
                 FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
     }
 
@@ -56,26 +55,17 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
     protected abstract String getFxaProfileEndpoint();
 
     ProfileJson getUserProfile(String bearerToken) {
-        Prefs prefs = Prefs.getInstance();
 
         try {
-            prefs.setBearerToken(bearerToken);
-
             HttpUtil httpUtil = getHttpUtil();
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Authorization", "Bearer " + bearerToken);
-            String profileUrl=  getFxaProfileEndpoint() + "/profile";
-
+            String profileUrl = getFxaProfileEndpoint() + "/profile";
 
             HTTPResponse resp = httpUtil.get(profileUrl, headers);
             ProfileJson profileJson = new ProfileJson(new JSONObject(resp.body()));
 
-            prefs.setEmail(profileJson.getEmail());
-            prefs.setEmail(profileJson.getDisplayName());
-
-
-            Log.i(LOG_TAG, "Profile response body: " +profileJson);
             return profileJson;
         } catch (Exception e) {
             Log.e(LOG_TAG, "Wut", e);
@@ -84,7 +74,7 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
     }
 
     @Override
-    protected void onPostExecute (ProfileJson result) {
+    protected void onPostExecute(ProfileJson result) {
         if (result == null) {
             Intent intent = new Intent(Intents.PROFILE_READ_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
@@ -92,7 +82,6 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
         }
         Intent intent = new Intent(Intents.PROFILE_READ);
         intent.putExtra("json", result.toString());
-        LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
-
 }

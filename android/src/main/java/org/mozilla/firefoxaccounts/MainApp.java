@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -18,10 +17,8 @@ import org.json.JSONObject;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
-import org.mozilla.accounts.fxa.Prefs;
 import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
 import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
-import org.mozilla.accounts.fxa.tasks.ProfileJson;
 
 public class MainApp extends Activity {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
@@ -37,6 +34,7 @@ public class MainApp extends Activity {
     private final BroadcastReceiver callbackReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN)) {
             /*
                 Sample JSON that you might get back
                 {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
@@ -45,37 +43,43 @@ public class MainApp extends Activity {
                 "auth_at":1432917700}
             */
 
-            String jsonBlob = intent.getStringExtra("json");
-            if (jsonBlob == null) {
-                Log.w(LOG_TAG, "error extracting json data");
-                return;
+                String jsonBlob = intent.getStringExtra("json");
+                if (jsonBlob == null) {
+                    Log.w(LOG_TAG, "error extracting json data");
+                    return;
+                }
+                JSONObject authJSON = null;
+                try {
+                    authJSON = new JSONObject(jsonBlob);
+                    Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
+                    String bearerToken = authJSON.getString("access_token");
+                    DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
+                    task.execute(bearerToken);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", e);
+                }
+            } else if (intent.getAction().equals(Intents.PROFILE_READ)) {
+                String jsonBlob = intent.getStringExtra("json");
+                Log.i(LOG_TAG, "Profile response body: " + jsonBlob);
+            } else {
+                Log.w(LOG_TAG, "Unexpected intent: " + intent);
             }
-            JSONObject authJSON = null;
-            try {
-                authJSON = new JSONObject(jsonBlob);
-                Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
-                String bearerToken = authJSON.getString("access_token");
-                Prefs.getInstance().setBearerToken(bearerToken);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error fetching bearer token. JSON = ["+authJSON+"]", e);
-            }
-
-            DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
-            task.execute(Prefs.getInstance().getBearerToken());
         }
     };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Prefs.createInstance(getApplicationContext());
 
         String app_name = getResources().getString(R.string.app_name);
         FxAGlobals.initFxaLogin(this, app_name);
 
         setContentView(R.layout.appmainexample);
 
-        IntentFilter intentFilter = new IntentFilter(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
+        intentFilter.addAction(Intents.PROFILE_READ);
+        intentFilter.addAction(Intents.PROFILE_READ_FAILURE);
 
         LocalBroadcastManager
                 .getInstance(getApplicationContext())
@@ -95,7 +99,7 @@ public class MainApp extends Activity {
         // If you add an scope that is not on that list, the login screen will hang instead
         // of going to the final redirect.  No user visible error occurs. This is terrible.
         // https://github.com/mozilla/fxa-content-server/issues/2508
-        String[] scopes = new String[] {"profile:email", "profile:display_name", "profile:display_name:write"};
+        String[] scopes = new String[]{"profile:email", "profile:display_name", "profile:display_name:write"};
         new DevOAuthDialog(this,
                 FXA_APP_CALLBACK,
                 scopes,
