@@ -4,6 +4,8 @@
 
 package org.mozilla.accounts.fxa;
 
+import android.content.IntentFilter;
+
 public class Intents {
 
     public static final String ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN = "org.mozilla.accounts.fxa.token";
@@ -21,5 +23,19 @@ public class Intents {
     public static final String OAUTH_DESTROY_FAIL = "org.mozilla.accounts.fxa.oauth:destroy.fail";
 
 
+    public static void registerFxaIntents(IntentFilter intentFilter) {
+        intentFilter.addAction(ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
 
+        intentFilter.addAction(PROFILE_READ);
+        intentFilter.addAction(PROFILE_READ_FAILURE);
+
+        intentFilter.addAction(OAUTH_VERIFY);
+        intentFilter.addAction(OAUTH_VERIFY_FAIL);
+
+        intentFilter.addAction(OAUTH_DESTROY);
+        intentFilter.addAction(OAUTH_DESTROY_FAIL);
+
+        intentFilter.addAction(PROFILE_UPDATE);
+        intentFilter.addAction(PROFILE_UPDATE_FAILURE);
+    }
 }

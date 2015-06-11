@@ -111,19 +111,7 @@ public class MainApp extends Activity {
         setContentView(R.layout.appmainexample);
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
-
-        intentFilter.addAction(Intents.PROFILE_READ);
-        intentFilter.addAction(Intents.PROFILE_READ_FAILURE);
-
-        intentFilter.addAction(Intents.OAUTH_VERIFY);
-        intentFilter.addAction(Intents.OAUTH_VERIFY_FAIL);
-
-        intentFilter.addAction(Intents.OAUTH_DESTROY);
-        intentFilter.addAction(Intents.OAUTH_DESTROY_FAIL);
-
-        intentFilter.addAction(Intents.PROFILE_UPDATE);
-        intentFilter.addAction(Intents.PROFILE_UPDATE_FAILURE);
+        Intents.registerFxaIntents(intentFilter);
 
 
         LocalBroadcastManager
