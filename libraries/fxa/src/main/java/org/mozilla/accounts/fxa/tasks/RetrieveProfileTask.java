@@ -8,16 +8,18 @@ import android.content.Context;
 
 import org.mozilla.accounts.fxa.tasks.base.AbstractRetrieveProfileTask;
 
-public class DevRetrieveProfileTask extends AbstractRetrieveProfileTask {
+public class RetrieveProfileTask extends AbstractRetrieveProfileTask{
 
-    public DevRetrieveProfileTask(Context ctx) {
+    final String fxa_profile_endpoint;
+
+    public RetrieveProfileTask(Context ctx, String profile_endpoint) {
         super(ctx);
+        fxa_profile_endpoint = profile_endpoint;
     }
 
     // Profile endpoint
     @Override
     protected  String getFxaProfileEndpoint() {
-        return "https://stable.dev.lcip.org/profile/v1";
+        return fxa_profile_endpoint;
     }
-
 }

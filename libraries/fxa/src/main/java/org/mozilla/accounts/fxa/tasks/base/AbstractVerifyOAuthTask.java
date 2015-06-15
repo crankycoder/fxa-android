@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.accounts.fxa.tasks;
+package org.mozilla.accounts.fxa.tasks.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,16 +27,14 @@ import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY_FAIL;
 /*
  This class verifies that a particular bearer token is still valid.
  */
-public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
+public abstract class AbstractVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
-    private static final String LOG_TAG = LoggerUtil.makeLogTag(DevVerifyOAuthTask.class);
+    private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractVerifyOAuthTask.class);
     private final Context mContext;
 
-    public String getOauth2Endpoint() {
-        return "https://oauth-stable.dev.lcip.org/v1";
-    }
+    public abstract String getOauth2Endpoint();
 
-    public DevVerifyOAuthTask(Context ctx) {
+    public AbstractVerifyOAuthTask(Context ctx) {
         mContext = ctx;
     }
 

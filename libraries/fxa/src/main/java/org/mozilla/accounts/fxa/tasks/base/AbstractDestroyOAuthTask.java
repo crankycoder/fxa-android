@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.accounts.fxa.tasks;
+package org.mozilla.accounts.fxa.tasks.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,16 +24,14 @@ import java.util.Map;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY;
 import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY_FAIL;
 
-public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
+public abstract class AbstractDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
 
-    private static final String LOG_TAG = LoggerUtil.makeLogTag(DevDestroyOAuthTask.class);
+    private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractDestroyOAuthTask.class);
     private final Context mContext;
 
-    public String getOauth2Endpoint() {
-        return "https://oauth-stable.dev.lcip.org/v1";
-    }
+    public abstract String getOauth2Endpoint();
 
-    public DevDestroyOAuthTask(Context ctx) {
+    public AbstractDestroyOAuthTask(Context ctx) {
         mContext = ctx;
     }
 

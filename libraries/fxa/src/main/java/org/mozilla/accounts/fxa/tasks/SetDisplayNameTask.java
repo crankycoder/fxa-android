@@ -8,14 +8,20 @@ import android.content.Context;
 
 import org.mozilla.accounts.fxa.tasks.base.AbstractSetDisplayNameTask;
 
-public class DevSetDisplayNameTask extends AbstractSetDisplayNameTask {
 
-    public DevSetDisplayNameTask(Context ctx) {
+public class SetDisplayNameTask extends AbstractSetDisplayNameTask {
+
+    private final String fxa_profile_endpoint;
+
+    public SetDisplayNameTask(Context ctx, String profile_endpoint) {
         super(ctx);
+        fxa_profile_endpoint = profile_endpoint;
     }
 
+    // Profile endpoint
     @Override
-    protected String getFxaProfileEndpoint() {
-        return "https://stable.dev.lcip.org/profile/v1";
+    protected  String getFxaProfileEndpoint() {
+        return fxa_profile_endpoint;
     }
+
 }

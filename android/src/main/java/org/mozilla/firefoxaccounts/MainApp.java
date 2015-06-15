@@ -18,10 +18,10 @@ import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
-import org.mozilla.accounts.fxa.tasks.DevDestroyOAuthTask;
-import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
-import org.mozilla.accounts.fxa.tasks.DevSetDisplayNameTask;
-import org.mozilla.accounts.fxa.tasks.DevVerifyOAuthTask;
+import org.mozilla.accounts.fxa.tasks.dev.DevDestroyOAuthTask;
+import org.mozilla.accounts.fxa.tasks.dev.DevRetrieveProfileTask;
+import org.mozilla.accounts.fxa.tasks.dev.DevSetDisplayNameTask;
+import org.mozilla.accounts.fxa.tasks.dev.DevVerifyOAuthTask;
 
 public class MainApp extends Activity {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
