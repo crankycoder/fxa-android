@@ -6,6 +6,7 @@ package org.mozilla.accounts.fxa.tasks.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,8 +18,6 @@ import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
-import org.mozilla.accounts.fxa.net.Zipper;
-import org.mozilla.accounts.fxa.tasks.ProfileJson;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,29 +28,41 @@ import java.util.Map;
 
  The bearer token must have the scope profile:display_name:write attached to it.
  */
-public abstract class AbstractSetDisplayNameTask extends AbstractRetrieveProfileTask {
+public abstract class AbstractSetDisplayNameTask extends AsyncTask<String, Void, String> {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractSetDisplayNameTask.class);
 
+    Context mContext;
+
+
     public AbstractSetDisplayNameTask(Context ctx) {
-        super(ctx);
+        mContext = ctx;
     }
 
-    protected ProfileJson doInBackground(String... strings) {
+
+    // Subclasses should override this to define where the profile server base URL is
+    protected abstract String getFxaProfileEndpoint();
+
+
+    protected String doInBackground(String... strings) {
         if (strings.length != 2 ||
                 TextUtils.isEmpty(strings[0]) ||
                 TextUtils.isEmpty(strings[1])) {
             return null;
         }
         String bearerToken = strings[0];
-        String displayName = strings[0];
+        String displayName = strings[1];
 
         return setDisplayName(bearerToken, displayName);
+    }
+
+    public AsyncTask<String, Void, String> execute(String bearerToken, String displayName) {
+        return super.execute(bearerToken, displayName);
     }
 
     /*
      Set the display name (nickname) for a user on the FxA profile server
      */
-    public ProfileJson setDisplayName(String bearerToken, String displayName) {
+    public String setDisplayName(String bearerToken, String displayName) {
         if (TextUtils.isEmpty(bearerToken) || TextUtils.isEmpty(displayName)) {
             Log.w(LOG_TAG, "Display name and bearer token must be set: [" + bearerToken +
                           ", " + displayName + "]");
@@ -77,25 +88,23 @@ public abstract class AbstractSetDisplayNameTask extends AbstractRetrieveProfile
         }
 
         HTTPResponse resp = httpUtil.post(displayNameUrl,
-                Zipper.zipData(blob.toString().getBytes()),
+                blob.toString().getBytes(),
                 headers);
-        if (resp.isSuccessCode2XX()) {
-            return getUserProfile(bearerToken);
-        } else {
-            Log.e(LOG_TAG, resp.body());
-            return null;
-        }
+
+        return resp.body();
     }
 
     @Override
-    protected void onPostExecute (ProfileJson result) {
+    protected void onPostExecute (String result) {
         if (result == null) {
-            Intent intent = new Intent(org.mozilla.accounts.fxa.Intents.PROFILE_UPDATE_FAILURE);
+            Intent intent = new Intent(org.mozilla.accounts.fxa.Intents.DISPLAY_NAME_WRITE_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             return;
         }
-        Intent intent = new Intent(Intents.PROFILE_UPDATE);
-        intent.putExtra("json", result.toString());
+        Intent intent = new Intent(Intents.DISPLAY_NAME_WRITE);
+        if (!TextUtils.isEmpty(result)) {
+            intent.putExtra("json", result);
+        }
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 }

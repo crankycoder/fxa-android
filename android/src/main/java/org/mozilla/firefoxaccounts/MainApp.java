@@ -23,8 +23,6 @@ import org.mozilla.accounts.fxa.tasks.DevRetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.DevSetDisplayNameTask;
 import org.mozilla.accounts.fxa.tasks.DevVerifyOAuthTask;
 
-import java.util.Random;
-
 public class MainApp extends Activity {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
 
@@ -45,20 +43,21 @@ public class MainApp extends Activity {
             } else if (intent.getAction().equals(Intents.PROFILE_READ)) {
                 processProfile(intent);
             } else if (intent.getAction().equals(Intents.OAUTH_VERIFY)) {
-                Log.i(LOG_TAG, "OAuth verification success! Requesting logout.");
+                Log.i(LOG_TAG, "OAuth verification success!");
                 DevSetDisplayNameTask task = new DevSetDisplayNameTask(getApplicationContext());
-                task.execute(BEARER_TOKEN, Integer.toString((new Random()).nextInt(2000)));
+                task.execute(BEARER_TOKEN, "FxA_testing");
             } else if (intent.getAction().equals(Intents.OAUTH_VERIFY_FAIL)) {
                 Log.i(LOG_TAG, "OAuth verification failure!");
             } else if (intent.getAction().equals(Intents.OAUTH_DESTROY)) {
                 Log.i(LOG_TAG, "OAuth destruction of bearer token succeeded!");
             } else if (intent.getAction().equals(Intents.OAUTH_DESTROY_FAIL)) {
                 Log.i(LOG_TAG, "OAuth destruction of bearer token failed");
-            } else if (intent.getAction().equals(Intents.PROFILE_UPDATE)) {
+            } else if (intent.getAction().equals(Intents.DISPLAY_NAME_WRITE)) {
                 Log.i(LOG_TAG, "Display name was updated!");
+                Log.i(LOG_TAG, "Display name update response: " + intent.getStringExtra("json"));
                 DevDestroyOAuthTask task = new DevDestroyOAuthTask(getApplicationContext());
                 task.execute(BEARER_TOKEN);
-            } else if (intent.getAction().equals(Intents.PROFILE_UPDATE_FAILURE)) {
+            } else if (intent.getAction().equals(Intents.DISPLAY_NAME_WRITE_FAILURE)) {
                 Log.i(LOG_TAG, "Display name was update failed!");
             } else {
                 Log.w(LOG_TAG, "Unexpected intent: " + intent);

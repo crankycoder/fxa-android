@@ -13,11 +13,10 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.FxAGlobals;
+import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
-import org.mozilla.accounts.fxa.net.Zipper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,38 +43,41 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(String... strings) {
         if (strings.length != 1 || TextUtils.isEmpty(strings[0])) {
+            Log.i(LOG_TAG, "Missing a bearer token.");
             return null;
         }
 
         return verify(strings[0]);
     }
 
+
+    public AsyncTask<String, Void, JSONObject> execute(String bearerToken) {
+        return super.execute(bearerToken);
+    }
+
     public JSONObject verify(String bearerToken) {
-
-        Log.i(LOG_TAG, "Verifying bearer token: ["+bearerToken+"]");
-
         if (TextUtils.isEmpty(bearerToken)) {
             Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
             return null;
         }
 
-        HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent")  + " " +
+        HttpUtil httpUtil = new HttpUtil(System.getProperty("http.agent") + " " +
                 FxAGlobals.appName + "/" + FxAGlobals.appVersionName);
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
-        String displayNameUrl =  getOauth2Endpoint() + "/verify";
+        String displayNameUrl = getOauth2Endpoint() + "/verify";
 
 
         JSONObject blob = new JSONObject();
         try {
             blob.put("token", bearerToken);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting token: ["+bearerToken+"]", e);
+            Log.e(LOG_TAG, "Error setting token: [" + bearerToken + "]", e);
             return null;
         }
 
-        HTTPResponse resp = httpUtil.post(displayNameUrl, Zipper.zipData(blob.toString().getBytes()), headers);
+        HTTPResponse resp = httpUtil.post(displayNameUrl, blob.toString().getBytes(), headers);
         if (resp.isSuccessCode2XX()) {
             try {
                 return new JSONObject(resp.body());
@@ -84,14 +86,13 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
                 return null;
             }
         } else {
-            Log.i(LOG_TAG, "Got http status code: " + resp.httpStatusCode());
-            Log.i(LOG_TAG, "Got http response: " + resp.body());
+            Log.w(LOG_TAG, "HTTP Status: " + resp.httpStatusCode());
             return null;
         }
     }
 
     @Override
-    protected void onPostExecute (JSONObject result) {
+    protected void onPostExecute(JSONObject result) {
         if (result == null) {
             Intent intent = new Intent(OAUTH_VERIFY_FAIL);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
@@ -101,5 +102,4 @@ public class DevVerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }
     }
-
 }

@@ -17,7 +17,6 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
-import org.mozilla.accounts.fxa.net.Zipper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +47,10 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
         return verify(strings[0]);
     }
 
+    public AsyncTask<String, Void, Boolean> execute(String bearerToken) {
+        return super.execute(bearerToken);
+    }
+
     public boolean verify(String bearerToken) {
         if (TextUtils.isEmpty(bearerToken)) {
             Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
@@ -71,9 +74,8 @@ public class DevDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
         }
 
         HTTPResponse resp = httpUtil.post(displayNameUrl,
-                Zipper.zipData(blob.toString().getBytes()),
+                blob.toString().getBytes(),
                 headers);
-        Log.i(LOG_TAG, "Destroy status: " + resp.httpStatusCode() + " body: " + resp.body());
         return resp.isSuccessCode2XX();
 
     }

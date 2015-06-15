@@ -10,8 +10,8 @@ public class Intents {
 
     public static final String ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN = "org.mozilla.accounts.fxa.token";
 
-    public static final String PROFILE_UPDATE_FAILURE = "org.mozilla.accounts.fxa.profile:write.fail";
-    public static final String PROFILE_UPDATE = "org.mozilla.accounts.fxa.profile:write";
+    public static final String DISPLAY_NAME_WRITE_FAILURE = "org.mozilla.accounts.fxa.display_name:write.fail";
+    public static final String DISPLAY_NAME_WRITE = "org.mozilla.accounts.fxa.display_name:write";
 
     public static final String PROFILE_READ = "org.mozilla.accounts.fxa.profile:read";
     public static final String PROFILE_READ_FAILURE = "org.mozilla.accounts.fxa.profile:read.fail";
@@ -35,7 +35,7 @@ public class Intents {
         intentFilter.addAction(OAUTH_DESTROY);
         intentFilter.addAction(OAUTH_DESTROY_FAIL);
 
-        intentFilter.addAction(PROFILE_UPDATE);
-        intentFilter.addAction(PROFILE_UPDATE_FAILURE);
+        intentFilter.addAction(DISPLAY_NAME_WRITE);
+        intentFilter.addAction(DISPLAY_NAME_WRITE_FAILURE);
     }
 }

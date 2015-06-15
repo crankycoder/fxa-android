@@ -29,7 +29,6 @@ public class HttpUtil {
     private final String userAgent;
 
     public HttpUtil(String ua) {
-        Log.i(LOG_TAG, "User agent: " + ua);
         userAgent = ua;
     }
 
@@ -93,7 +92,22 @@ public class HttpUtil {
         return new HTTPResponse(598, 0);
     }
 
+    /*
+     Mostly useful for debugging
+     */
+    @SuppressWarnings("unused")
+    public HTTPResponse post_nozip(String urlString, byte[] data, Map<String, String> headers) {
+        return _post(urlString, data, headers, false);
+    }
+
     public HTTPResponse post(String urlString, byte[] data, Map<String, String> headers) {
+        return _post(urlString, data, headers, true);
+    }
+
+    public HTTPResponse _post(String urlString,
+                              byte[] data,
+                              Map<String, String> headers,
+                              boolean compress) {
 
         URL url = null;
         HttpURLConnection httpURLConnection = null;
@@ -143,11 +157,15 @@ public class HttpUtil {
 
         byte[] wire_data = data;
 
-        if (wire_data != null) {
-            httpURLConnection.setRequestProperty("Content-Encoding", "gzip");
-        } else {
-            Log.w(LOG_TAG, "Couldn't compress data, falling back to raw data.");
-            wire_data = data;
+        if (compress) {
+            if (wire_data != null) {
+                httpURLConnection.setRequestProperty("Content-Encoding", "gzip");
+                wire_data = Zipper.zipData(data);
+            }
+        }
+
+        if (wire_data == null) {
+            wire_data = new byte[0];
         }
 
         httpURLConnection.setFixedLengthStreamingMode(wire_data.length);

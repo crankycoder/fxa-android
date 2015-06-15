@@ -51,6 +51,10 @@ public abstract class AbstractRetrieveProfileTask extends AsyncTask<String, Void
         return getUserProfile(strings[0]);
     }
 
+    public AsyncTask<String, Void, ProfileJson> execute(String bearerToken) {
+        return super.execute(bearerToken);
+    }
+
     // This must be overloaded by subclasses
     protected abstract String getFxaProfileEndpoint();
 
