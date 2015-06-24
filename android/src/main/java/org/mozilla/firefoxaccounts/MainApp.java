@@ -1,29 +1,26 @@
 package org.mozilla.firefoxaccounts;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.accounts.fxa.FxAGlobals;
-import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
+import org.mozilla.accounts.fxa.IFxaCallback;
+
+import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
 import org.mozilla.accounts.fxa.tasks.dev.DevDestroyOAuthTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevRetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevSetDisplayNameTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevVerifyOAuthTask;
 
-public class MainApp extends Activity {
+public class MainApp
+        extends Activity
+        implements IFxaCallback {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
 
     // These secrets are provisioned from the FxA dashboard
@@ -32,73 +29,7 @@ public class MainApp extends Activity {
     // And finally the callback endpoint on our web application
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
     public final String FXA_APP_CALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
-
     static String BEARER_TOKEN = null;
-
-    private final BroadcastReceiver callbackReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN)) {
-                processBearerToken(intent);
-            } else if (intent.getAction().equals(Intents.PROFILE_READ)) {
-                processProfile(intent);
-            } else if (intent.getAction().equals(Intents.OAUTH_VERIFY)) {
-                Log.i(LOG_TAG, "OAuth verification success!");
-                DevSetDisplayNameTask task = new DevSetDisplayNameTask(getApplicationContext());
-                task.execute(BEARER_TOKEN, "FxA_testing");
-            } else if (intent.getAction().equals(Intents.OAUTH_VERIFY_FAIL)) {
-                Log.i(LOG_TAG, "OAuth verification failure!");
-            } else if (intent.getAction().equals(Intents.OAUTH_DESTROY)) {
-                Log.i(LOG_TAG, "OAuth destruction of bearer token succeeded!");
-            } else if (intent.getAction().equals(Intents.OAUTH_DESTROY_FAIL)) {
-                Log.i(LOG_TAG, "OAuth destruction of bearer token failed");
-            } else if (intent.getAction().equals(Intents.DISPLAY_NAME_WRITE)) {
-                Log.i(LOG_TAG, "Display name was updated!");
-                Log.i(LOG_TAG, "Display name update response: " + intent.getStringExtra("json"));
-                DevDestroyOAuthTask task = new DevDestroyOAuthTask(getApplicationContext());
-                task.execute(BEARER_TOKEN);
-            } else if (intent.getAction().equals(Intents.DISPLAY_NAME_WRITE_FAILURE)) {
-                Log.i(LOG_TAG, "Display name was update failed!");
-            } else {
-                Log.w(LOG_TAG, "Unexpected intent: " + intent);
-            }
-        }
-
-        private void processProfile(Intent intent) {
-            String jsonBlob = intent.getStringExtra("json");
-            Log.i(LOG_TAG, "Profile response body: " + jsonBlob);
-
-            // Fire off the verify OAuth task
-            DevVerifyOAuthTask task = new DevVerifyOAuthTask(getApplicationContext());
-            task.execute(BEARER_TOKEN);
-        }
-
-        private void processBearerToken(Intent intent) {
-    /*
-        Sample JSON that you might get back
-        {"access_token":"fadf25f84838877d6eb03563f501abfac62c0a01aaf98b34eec1b28e888b02a2",
-        "token_type":"bearer",
-        "scope":"profile:email",
-        "auth_at":1432917700}
-    */
-
-            String jsonBlob = intent.getStringExtra("json");
-            if (jsonBlob == null) {
-                Log.w(LOG_TAG, "error extracting json data");
-                return;
-            }
-            JSONObject authJSON = null;
-            try {
-                authJSON = new JSONObject(jsonBlob);
-                Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
-                BEARER_TOKEN = authJSON.getString("access_token");
-                DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
-                task.execute(BEARER_TOKEN);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", e);
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,14 +39,6 @@ public class MainApp extends Activity {
         FxAGlobals.initFxaLogin(this, app_name);
 
         setContentView(R.layout.appmainexample);
-
-        IntentFilter intentFilter = new IntentFilter();
-        Intents.registerFxaIntents(intentFilter);
-
-
-        LocalBroadcastManager
-                .getInstance(getApplicationContext())
-                .registerReceiver(callbackReceiver, intentFilter);
     }
 
     /*
@@ -136,5 +59,63 @@ public class MainApp extends Activity {
                 FXA_APP_CALLBACK,
                 scopes,
                 FXA_APP_KEY).show();
+    }
+
+
+    /*
+     * These are callbacks that the FxA library will callback on when network activity is complete.
+     */
+    @Override
+    public void acceptFxaBearerToken(String token) {
+        //Note that we have to save the token right away
+        BEARER_TOKEN = token;
+
+        DevRetrieveProfileTask task = new DevRetrieveProfileTask(getApplicationContext());
+        task.execute(BEARER_TOKEN);
+    }
+
+    @Override
+    public void acceptProfile(JSONObject profileJson) {
+        // Fire off the verify OAuth task
+        DevVerifyOAuthTask task = new DevVerifyOAuthTask(getApplicationContext());
+        task.execute(BEARER_TOKEN);
+    }
+
+    @Override
+    public void profileReadFailure() {
+        // do nothing for the demo.
+    }
+
+    @Override
+    public void acceptOAuthVerified() {
+        Log.i(LOG_TAG, "OAuth verification success!");
+        DevSetDisplayNameTask task = new DevSetDisplayNameTask(getApplicationContext());
+        task.execute(BEARER_TOKEN, "FxA_testing");
+    }
+
+    @Override
+    public void oauthVerificationFailure() {
+        Log.i(LOG_TAG, "OAuth verification failure!");
+    }
+
+    @Override
+    public void acceptOAuthDestroy() {
+        Log.i(LOG_TAG, "OAuth destruction of bearer token succeeded!");
+    }
+
+    @Override
+    public void oauthDestroyFailure() {
+        Log.i(LOG_TAG, "OAuth destruction of bearer token failed");
+    }
+
+    @Override
+    public void acceptDisplayNameWrite() {
+        DevDestroyOAuthTask task = new DevDestroyOAuthTask(getApplicationContext());
+        task.execute(BEARER_TOKEN);
+    }
+
+    @Override
+    public void acceptDisplayNameWriteFailure() {
+        Log.i(LOG_TAG, "Display name was update failed!");
     }
 }
