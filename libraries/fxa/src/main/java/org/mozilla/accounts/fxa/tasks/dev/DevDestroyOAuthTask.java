@@ -10,8 +10,6 @@ import org.mozilla.accounts.fxa.tasks.DestroyOAuthTask;
 import static org.mozilla.accounts.fxa.tasks.dev.DevConstants.STABLE_DEV_OAUTH2_SERVER;
 
 public class DevDestroyOAuthTask extends DestroyOAuthTask {
-
-
     public DevDestroyOAuthTask(Context ctx) {
         super(ctx, STABLE_DEV_OAUTH2_SERVER);
     }

@@ -13,6 +13,11 @@ import org.mozilla.accounts.fxa.IFxaCallback;
 
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
+
+
+// These tasks are hardcoded to point to our dev servers.
+// You probably want to look at org.mozilla.accounts.fxa.tasks
+// for the regular tasks that can be repointed to any FxA server.
 import org.mozilla.accounts.fxa.tasks.dev.DevDestroyOAuthTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevRetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevSetDisplayNameTask;

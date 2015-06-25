@@ -89,8 +89,8 @@ dependencies {
     testCompile project(':libraries:fxa')
 
     // Uncomment this for release builds
-    // compile 'org.mozilla.accounts.fxa:fxa:0.9.9'
-    // testCompile 'org.mozilla.accounts.fxa:fxa:0.9.9'
+    // compile 'org.mozilla.accounts.fxa:fxa:0.9.10'
+    // testCompile 'org.mozilla.accounts.fxa:fxa:0.9.10'
 
     // https://developer.android.com/tools/support-library/features.html
     // In general, we recommend including the v4 support and v7 appcompat
