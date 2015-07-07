@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY;
-import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY_FAIL;
+import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY_FAILURE;
 
 /*
  This class verifies that a particular bearer token is still valid.
@@ -92,7 +92,7 @@ public abstract class AbstractVerifyOAuthTask extends AsyncTask<String, Void, JS
     @Override
     protected void onPostExecute(JSONObject result) {
         if (result == null) {
-            Intent intent = new Intent(OAUTH_VERIFY_FAIL);
+            Intent intent = new Intent(OAUTH_VERIFY_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         } else {
             Intent intent = new Intent(OAUTH_VERIFY);

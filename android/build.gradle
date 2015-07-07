@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 10
         targetSdkVersion 18
 
         applicationId "org.mozilla.firefoxaccounts"

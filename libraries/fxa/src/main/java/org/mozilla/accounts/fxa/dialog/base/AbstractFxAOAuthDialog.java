@@ -36,7 +36,7 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
         String scopeText = TextUtils.join(" ", scopes);
         mUrl = signinUrl
                 + "?client_id=" + AppKey
-                + "&state=99" // I don't care about state
+                + "&state=99" // Someone else can implement this state thing
                 + "&scope="+scopeText
                 + "&redirect_uri=" + mAppCallback;
     }
@@ -80,7 +80,7 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
             int end = html.indexOf("</body>");
             String jsonBlob = html.substring(start, end);
 
-            Intent fxaOauthIntent = new Intent(Intents.ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
+            Intent fxaOauthIntent = new Intent(Intents.RECEIVE_BEARER_TOKEN);
             fxaOauthIntent.putExtra("json", jsonBlob);
             dismiss();
             LocalBroadcastManager

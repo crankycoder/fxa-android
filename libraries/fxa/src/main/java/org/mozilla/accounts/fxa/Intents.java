@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 
 public class Intents {
 
-    public static final String ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN = "org.mozilla.accounts.fxa.token";
+    public static final String RECEIVE_BEARER_TOKEN = "org.mozilla.accounts.fxa.token";
 
     public static final String DISPLAY_NAME_WRITE_FAILURE = "org.mozilla.accounts.fxa.display_name:write.fail";
     public static final String DISPLAY_NAME_WRITE = "org.mozilla.accounts.fxa.display_name:write";
@@ -17,23 +17,23 @@ public class Intents {
     public static final String PROFILE_READ_FAILURE = "org.mozilla.accounts.fxa.profile:read.fail";
 
     public static final String OAUTH_VERIFY = "org.mozilla.accounts.fxa.oauth:verify";
-    public static final String OAUTH_VERIFY_FAIL = "org.mozilla.accounts.fxa.oauth:verify.fail";
+    public static final String OAUTH_VERIFY_FAILURE = "org.mozilla.accounts.fxa.oauth:verify.fail";
 
     public static final String OAUTH_DESTROY = "org.mozilla.accounts.fxa.oauth:destroy";
-    public static final String OAUTH_DESTROY_FAIL = "org.mozilla.accounts.fxa.oauth:destroy.fail";
+    public static final String OAUTH_DESTROY_FAILURE = "org.mozilla.accounts.fxa.oauth:destroy.fail";
 
 
     public static void registerFxaIntents(IntentFilter intentFilter) {
-        intentFilter.addAction(ORG_MOZILLA_ACCOUNTS_FXA_BEARER_TOKEN);
+        intentFilter.addAction(RECEIVE_BEARER_TOKEN);
 
         intentFilter.addAction(PROFILE_READ);
         intentFilter.addAction(PROFILE_READ_FAILURE);
 
         intentFilter.addAction(OAUTH_VERIFY);
-        intentFilter.addAction(OAUTH_VERIFY_FAIL);
+        intentFilter.addAction(OAUTH_VERIFY_FAILURE);
 
         intentFilter.addAction(OAUTH_DESTROY);
-        intentFilter.addAction(OAUTH_DESTROY_FAIL);
+        intentFilter.addAction(OAUTH_DESTROY_FAILURE);
 
         intentFilter.addAction(DISPLAY_NAME_WRITE);
         intentFilter.addAction(DISPLAY_NAME_WRITE_FAILURE);

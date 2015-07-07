@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY;
-import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY_FAIL;
+import static org.mozilla.accounts.fxa.Intents.OAUTH_DESTROY_FAILURE;
 
 public abstract class AbstractDestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
 
@@ -84,7 +84,7 @@ public abstract class AbstractDestroyOAuthTask extends AsyncTask<String, Void, B
             Intent intent = new Intent(OAUTH_DESTROY);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         } else {
-            Intent intent = new Intent(OAUTH_DESTROY_FAIL);
+            Intent intent = new Intent(OAUTH_DESTROY_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }
     }
