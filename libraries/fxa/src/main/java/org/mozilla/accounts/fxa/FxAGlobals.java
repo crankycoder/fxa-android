@@ -50,17 +50,18 @@ public class FxAGlobals {
     };
     private IFxACallbacks callbackSite = null;
 
-    public void startIntentListening(Context ctx, String app_name) {
+    public void startIntentListening(Context ctx, IFxACallbacks iFxACallbacks, String app_name) {
         // Clobber the FxAGlobals so that the user-agent for the FxA client will be sensible
         FxAGlobals.appVersionName = BuildConfig.VERSION_NAME;
         FxAGlobals.appVersionCode = BuildConfig.VERSION_CODE;
         FxAGlobals.appName = app_name;
 
+        callbackSite = iFxACallbacks;
+
         IntentFilter intentFilter = new IntentFilter();
         Intents.registerFxaIntents(intentFilter);
 
-        LocalBroadcastManager
-                .getInstance(ctx.getApplicationContext())
+        LocalBroadcastManager.getInstance(ctx.getApplicationContext())
                 .registerReceiver(callbackReceiver, intentFilter);
     }
 
@@ -150,9 +151,6 @@ public class FxAGlobals {
         callbackSite.processDisplayNameWrite();
     }
 
-    public void registerCallbacks(IFxACallbacks iFxACallbacks) {
-        callbackSite = iFxACallbacks;
-    }
 }
 
 
