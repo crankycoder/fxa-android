@@ -31,7 +31,7 @@ Assuming you're using gradle, all you need to do is include a the fxa dependency
 
 ```
 dependencies {
-    compile 'org.mozilla.accounts.fxa:fxa:0.9.1'
+    compile 'org.mozilla.accounts.fxa:fxa:0.9.12'
 }
 ```
 
