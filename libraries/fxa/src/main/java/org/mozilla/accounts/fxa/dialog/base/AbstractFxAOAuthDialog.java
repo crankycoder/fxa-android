@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -13,6 +14,13 @@ import android.widget.LinearLayout;
 
 import org.mozilla.accounts.fxa.Intents;
 import org.mozilla.accounts.fxa.LoggerUtil;
+import org.xml.sax.InputSource;
+
+import java.io.StringReader;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 public abstract class AbstractFxAOAuthDialog extends Dialog {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(AbstractFxAOAuthDialog.class);
@@ -76,9 +84,20 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
      */
     public void contentCallback(String html) {
         if (html.contains("access_token")) {
-            int start = html.indexOf("<body>") + "<body>".length();
-            int end = html.indexOf("</body>");
-            String jsonBlob = html.substring(start, end);
+
+            Log.w("fxa", "Got showHtml["+html+"]");
+            XPathFactory xpathFactory = XPathFactory.newInstance();
+            XPath xpath = xpathFactory.newXPath();
+
+            InputSource source = new InputSource(new StringReader(html));
+
+            String jsonBlob = "";
+            try {
+                jsonBlob = (String) xpath.evaluate("//pre", source, XPathConstants.STRING);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error extracting <pre> tag: [" + e.toString()+ "] Content: ["+html+"]");
+                return;
+            }
 
             Intent fxaOauthIntent = new Intent(Intents.RECEIVE_BEARER_TOKEN);
             fxaOauthIntent.putExtra("json", jsonBlob);
