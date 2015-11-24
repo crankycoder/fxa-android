@@ -26,11 +26,11 @@ public class MainApp extends Activity implements IFxACallbacks {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
 
     // These secrets are provisioned from the FxA dashboard
-    private static final String FXA_APP_KEY = "d0f6d2ed3c5fcc3b";
+    private static final String FXA_APP_KEY = "86cd25bed2c63936";
 
     // And finally the callback endpoint on our web application
     // Example server endpoint code is available under the `sample_endpoint` subdirectory.
-    public static final String FXA_APP_CALLBACK = "http://ec2-52-1-93-147.compute-1.amazonaws.com/fxa/callback";
+    public static final String FXA_APP_CALLBACK = "http://leaderboard-dev.jaredkerim.com/";
 
     static String BEARER_TOKEN = null;
 
