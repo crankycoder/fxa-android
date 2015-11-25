@@ -74,6 +74,11 @@ public class MainApp extends Activity implements IFxACallbacks {
     }
 
     @Override
+    public void processRawResponse(JSONObject authJSON) {
+        Log.i(LOG_TAG, "MainApp Received JSON response: " + authJSON.toString());
+    }
+
+    @Override
     public void failCallback(String intent_name) {
         // TODO: handle callback failures here
         Log.i(LOG_TAG, "A callback failed: ["+intent_name+"]");

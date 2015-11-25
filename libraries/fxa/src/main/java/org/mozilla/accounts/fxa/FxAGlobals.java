@@ -82,6 +82,7 @@ public class FxAGlobals {
             Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
             String bearerToken = authJSON.getString("access_token");
             callbackSite.processReceiveBearerToken(bearerToken);
+            callbackSite.processRawResponse(authJSON);
         } catch (JSONException jse) {
             Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", jse);
         }

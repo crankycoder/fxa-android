@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 public interface IFxACallbacks {
     void processReceiveBearerToken(String bearerToken);
+    void processRawResponse(JSONObject authJSON);
 
     void failCallback(String profileRead);
 
