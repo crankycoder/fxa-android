@@ -1,22 +1,18 @@
 package org.mozilla.firefoxaccounts;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.mozilla.accounts.fxa.FxAGlobals;
-import org.mozilla.accounts.fxa.Intents;
-import org.mozilla.accounts.fxa.LoggerUtil;
-import org.mozilla.accounts.fxa.dialog.DevOAuthDialog;
 import org.mozilla.accounts.fxa.IFxACallbacks;
+import org.mozilla.accounts.fxa.LoggerUtil;
+import org.mozilla.accounts.fxa.dialog.OAuthDialog;
 import org.mozilla.accounts.fxa.tasks.dev.DevDestroyOAuthTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevRetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.dev.DevSetDisplayNameTask;
@@ -59,7 +55,8 @@ public class MainApp extends Activity implements IFxACallbacks {
         // of going to the final redirect.  No user visible error occurs. This is terrible.
         // https://github.com/mozilla/fxa-content-server/issues/2508
         String[] scopes = new String[]{"profile:email", "profile:display_name", "profile:display_name:write"};
-        new DevOAuthDialog(this,
+        new OAuthDialog(this,
+                "https://oauth-stable.dev.lcip.org/v1",
                 FXA_APP_CALLBACK,
                 scopes,
                 FXA_APP_KEY).show();

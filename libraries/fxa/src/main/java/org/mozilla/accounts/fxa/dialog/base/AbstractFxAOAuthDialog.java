@@ -42,12 +42,13 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
         mAppCallback = appCallback;
 
         String scopeText = TextUtils.join(" ", scopes);
-        mUrl = signinUrl
-                + "?client_id=" + AppKey
-                + "&action=signin"
+        mUrl = signinUrl + "/authorization?action=signin"
+                + "&client_id=" + AppKey
                 + "&state=99" // Someone else can implement this state thing
                 + "&scope="+scopeText
                 + "&redirect_uri=" + mAppCallback;
+
+        Log.i(LOG_TAG, mUrl);
     }
 
     @Override
