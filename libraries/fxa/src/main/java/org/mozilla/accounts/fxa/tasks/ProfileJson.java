@@ -14,6 +14,8 @@ public class ProfileJson {
         profileObj = jobj;
     }
 
+    public String getUID() { return profileObj.optString("uid"); }
+
     public String getEmail() {
         return profileObj.optString("email");
     }
