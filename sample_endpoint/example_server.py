@@ -15,9 +15,14 @@ class MainResource(object):
         """Handles GET requests"""
 
         // Note that these secrets are provisioned from the FxA dashboard.
-        payload = {"client_id": "d0f6d2ed3c5fcc3b",
-                   "client_secret": "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af",
-                   "code": req.params['code']}
+        if req.params['grant_type'] == 'authorization_code':
+            payload = {"client_id": "d0f6d2ed3c5fcc3b",
+                       "client_secret": "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af",
+                       "code": req.params['code']}
+        elif req.params['grant_type'] == 'refresh_token':
+            payload = {"client_id": "d0f6d2ed3c5fcc3b",
+                       "client_secret": "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af",
+                       "refresh_token": req.params['refresh_token']}
 
         fxa_resp = requests.post("https://oauth-stable.dev.lcip.org/v1/token",
                              data=json.dumps(payload))
