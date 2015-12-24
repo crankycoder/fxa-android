@@ -46,6 +46,7 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
                 + "&client_id=" + AppKey
                 + "&state=99" // Someone else can implement this state thing
                 + "&scope="+scopeText
+                + "&access_type=offline"
                 + "&redirect_uri=" + mAppCallback;
 
         Log.i(LOG_TAG, mUrl);
