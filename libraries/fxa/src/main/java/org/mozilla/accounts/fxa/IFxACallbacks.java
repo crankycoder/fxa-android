@@ -10,6 +10,8 @@ import org.json.JSONObject;
 
 public interface IFxACallbacks {
     void processReceiveBearerToken(String bearerToken);
+
+    // Process raw response is required to support extensions like refresh_tokens
     void processRawResponse(JSONObject authJSON);
 
     void failCallback(String profileRead);

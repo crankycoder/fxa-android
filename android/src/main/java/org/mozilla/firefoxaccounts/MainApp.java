@@ -72,6 +72,10 @@ public class MainApp extends Activity implements IFxACallbacks {
 
     @Override
     public void processRawResponse(JSONObject authJSON) {
+
+        // TODO: process the authJSON to extract the refresh_token
+        String refresh_token = authJSON.optString("refresh_token", "");
+        Log.i(LOG_TAG, "MainApp received refresh token: ["+refresh_token+"]");
         Log.i(LOG_TAG, "MainApp Received JSON response: " + authJSON.toString());
     }
 
