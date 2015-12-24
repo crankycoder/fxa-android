@@ -86,8 +86,6 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
      */
     public void contentCallback(String html) {
         if (html.contains("access_token")) {
-
-            Log.w("fxa", "Got showHtml["+html+"]");
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
 
