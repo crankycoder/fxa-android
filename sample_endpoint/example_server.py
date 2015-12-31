@@ -3,7 +3,6 @@
 import falcon
 import json
 import requests
-import sys
 
 
 def crossdomain(req, resp):
@@ -14,28 +13,55 @@ class MainResource(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
 
-        // Note that these secrets are provisioned from the FxA dashboard.
-        if req.params['grant_type'] == 'authorization_code':
-            payload = {"client_id": "d0f6d2ed3c5fcc3b",
-                       "client_secret": "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af",
-                       "code": req.params['code']}
-        elif req.params['grant_type'] == 'refresh_token':
-            payload = {"client_id": "d0f6d2ed3c5fcc3b",
-                       "client_secret": "3015f44423df9a5f08d0b5cd43e0cbb6f82c56e37f09a3909db293e17a9e64af",
-                       "refresh_token": req.params['refresh_token']}
+        # Note that these secrets are provisioned from the FxA dashboard.
+        # The FxA login is split between the handset and the server
+        # side.
+        # This code expects that a new refresh token is submitted
+        # each time.
+        payload = {"client_id": "52ba0364d1629ade",
+                   "client_secret": "c65e2e22415d9ed83a777be498fb6f6dcb3d4378785a19741f531d13347eb20a"
+                   }
 
+        # Copy out all values from the request
+        for k, v in req.params.items():
+            payload[k] = v
+
+        print "JSON Payload being posted: " + str(payload)
         fxa_resp = requests.post("https://oauth-stable.dev.lcip.org/v1/token",
                              data=json.dumps(payload))
 
-        resp.content_type = "text/html"
-        json_text = fxa_resp.text
-        tmpl = """<html><body><h1>Logged in!</h1>
-        <!--START_FXA_DATA
-        %s
-        END_FXA_DATA -->
-        %s
-        </body></html>"""
-        resp.body = json_text # tmpl % (json_text, json_text)
+        resp.content_type = "application/json"
+        print "Response JSON: " + str(fxa_resp.text)
+        resp.body = fxa_resp.text
+
+class RefreshTokenResource(object):
+    def on_get(self, req, resp):
+        """
+        Use the refresh token to generate a new access token
+        """
+        # Note that these secrets are provisioned from the FxA dashboard.
+        # The FxA login is split between the handset and the server
+        # side.
+        # This code expects that a new refresh token is submitted
+        # each time.
+
+        payload = {"client_id": "52ba0364d1629ade",
+                   "client_secret": "c65e2e22415d9ed83a777be498fb6f6dcb3d4378785a19741f531d13347eb20a"
+                   }
+        if 'refresh_token' in req.params:
+            payload["grant_type"] = "refresh_token"
+
+        # Copy out all values from the request
+        for k, v in req.params.items():
+            payload[k] = v
+
+        print "JSON Payload being posted: " + str(payload)
+        fxa_resp = requests.post("https://oauth-stable.dev.lcip.org/v1/token",
+                             data=json.dumps(payload))
+
+        resp.content_type = "application/json"
+        print "Response JSON: " + str(fxa_resp.text)
+        resp.body = fxa_resp.text
 
 
 app = falcon.API(after=[crossdomain])

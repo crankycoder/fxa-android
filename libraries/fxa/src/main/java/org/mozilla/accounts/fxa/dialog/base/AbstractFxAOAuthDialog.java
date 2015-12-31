@@ -42,11 +42,11 @@ public abstract class AbstractFxAOAuthDialog extends Dialog {
         mAppCallback = appCallback;
 
         String scopeText = TextUtils.join(" ", scopes);
-        mUrl = signinUrl + "/authorization?action=signin"
+        mUrl = signinUrl + "/v1/authorization?action=signin"
                 + "&client_id=" + AppKey
                 + "&state=99" // Someone else can implement this state thing
                 + "&scope="+scopeText
-                + "&access_type=offline"
+                + "&access_type=offline"   // This is for refresh tokens
                 + "&redirect_uri=" + mAppCallback;
 
         Log.i(LOG_TAG, mUrl);
