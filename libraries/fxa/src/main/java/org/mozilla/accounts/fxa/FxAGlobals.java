@@ -43,11 +43,16 @@ public class FxAGlobals {
                 processOauthDestroy(intent, true);
             } else if (intent.getAction().equals(Intents.OAUTH_DESTROY_FAILURE)) {
                 processOauthDestroy(intent, false);
+            } else if (intent.getAction().equals(Intents.ACCESS_TOKEN_REFRESH)) {
+                processRefreshToken(intent, true);
+            } else if (intent.getAction().equals(Intents.ACCESS_TOKEN_REFRESH_FAILURE)) {
+                processRefreshToken(intent, false);
             } else {
                 Log.w(LOG_TAG, "Unexpected intent: " + intent);
             }
         }
     };
+
     private IFxACallbacks callbackSite = null;
 
     public void startIntentListening(Context ctx, IFxACallbacks iFxACallbacks, String app_name) {
@@ -151,6 +156,28 @@ public class FxAGlobals {
         }
         callbackSite.processDisplayNameWrite();
     }
+
+
+
+    private void processRefreshToken(Intent intent, boolean success) {
+        if (callbackSite == null) {
+            return;
+        }
+        if (!success) {
+            callbackSite.failCallback(Intents.ACCESS_TOKEN_REFRESH);
+            return;
+        }
+
+        try {
+            String jsonBlob = intent.getStringExtra("json");
+            JSONObject jObj = new JSONObject(jsonBlob);
+            callbackSite.processRefreshToken(jObj);
+        } catch (JSONException e) {
+            Log.w(LOG_TAG, "Error decoding JSON", e);
+            callbackSite.failCallback(Intents.PROFILE_READ);
+        }
+    }
+
 
 }
 

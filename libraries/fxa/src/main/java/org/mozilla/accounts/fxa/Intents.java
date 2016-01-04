@@ -22,6 +22,8 @@ public class Intents {
     public static final String OAUTH_DESTROY = "org.mozilla.accounts.fxa.oauth:destroy";
     public static final String OAUTH_DESTROY_FAILURE = "org.mozilla.accounts.fxa.oauth:destroy.fail";
 
+    public static final String ACCESS_TOKEN_REFRESH = "org.mozilla.accounts.fxa.access_token_refresh";
+    public static final String ACCESS_TOKEN_REFRESH_FAILURE = "org.mozilla.accounts.fxa.access_token_refresh.failure";
 
     public static void registerFxaIntents(IntentFilter intentFilter) {
         intentFilter.addAction(RECEIVE_BEARER_TOKEN);
@@ -37,5 +39,9 @@ public class Intents {
 
         intentFilter.addAction(DISPLAY_NAME_WRITE);
         intentFilter.addAction(DISPLAY_NAME_WRITE_FAILURE);
+
+        intentFilter.addAction(ACCESS_TOKEN_REFRESH);
+        intentFilter.addAction(ACCESS_TOKEN_REFRESH_FAILURE);
+
     }
 }

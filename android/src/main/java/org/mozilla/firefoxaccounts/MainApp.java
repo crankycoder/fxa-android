@@ -3,6 +3,7 @@ package org.mozilla.firefoxaccounts;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -14,12 +15,13 @@ import org.mozilla.accounts.fxa.IFxACallbacks;
 import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.dialog.OAuthDialog;
 import org.mozilla.accounts.fxa.tasks.DestroyOAuthTask;
+import org.mozilla.accounts.fxa.tasks.RequestRefreshedToken;
 import org.mozilla.accounts.fxa.tasks.RetrieveProfileTask;
 import org.mozilla.accounts.fxa.tasks.SetDisplayNameTask;
 import org.mozilla.accounts.fxa.tasks.VerifyOAuthTask;
-import org.mozilla.accounts.fxa.tasks.dev.DevConstants;
+import org.mozilla.accounts.fxa.tasks.FxAConstants;
 
-import static org.mozilla.accounts.fxa.tasks.dev.DevConstants.STABLE_DEV_OAUTH2_SERVER;
+import static org.mozilla.accounts.fxa.tasks.FxAConstants.STABLE_DEV_OAUTH2_SERVER;
 
 public class MainApp extends Activity implements IFxACallbacks {
     private static final String LOG_TAG = LoggerUtil.makeLogTag(MainApp.class);
@@ -34,6 +36,7 @@ public class MainApp extends Activity implements IFxACallbacks {
     public static final String FXA_OAUTH_BASE = "https://oauth-stable.dev.lcip.org";
 
     static String BEARER_TOKEN = null;
+    static String REFRESH_TOKEN = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,7 @@ public class MainApp extends Activity implements IFxACallbacks {
     @Override
     public void processReceiveBearerToken(String bearerToken) {
         BEARER_TOKEN = bearerToken;
-        RetrieveProfileTask task = new RetrieveProfileTask(getApplicationContext(), DevConstants.STABLE_DEV_PROFILE_SERVER);
+        RetrieveProfileTask task = new RetrieveProfileTask(getApplicationContext(), FxAConstants.STABLE_DEV_PROFILE_SERVER);
         task.execute(BEARER_TOKEN);
     }
 
@@ -81,8 +84,8 @@ public class MainApp extends Activity implements IFxACallbacks {
     public void processRawResponse(JSONObject authJSON) {
 
         // TODO: process the authJSON to extract the refresh_token
-        String refresh_token = authJSON.optString("refresh_token", "");
-        Log.i(LOG_TAG, "MainApp received refresh token: ["+refresh_token+"]");
+        REFRESH_TOKEN  = authJSON.optString("refresh_token", "");
+        Log.i(LOG_TAG, "MainApp received refresh token: ["+REFRESH_TOKEN+"]");
         Log.i(LOG_TAG, "MainApp Received JSON response: " + authJSON.toString());
     }
 
@@ -97,7 +100,7 @@ public class MainApp extends Activity implements IFxACallbacks {
         Log.i(LOG_TAG, "Read a profile: " + jsonBlob.toString());
 
         // Fire off the verify OAuth task
-        VerifyOAuthTask task = new VerifyOAuthTask(getApplicationContext(), DevConstants.STABLE_DEV_OAUTH2_SERVER);
+        VerifyOAuthTask task = new VerifyOAuthTask(getApplicationContext(), FxAConstants.STABLE_DEV_OAUTH2_SERVER);
         task.execute(BEARER_TOKEN);
     }
 
@@ -117,7 +120,25 @@ public class MainApp extends Activity implements IFxACallbacks {
     @Override
     public void processOauthVerify() {
         Log.i(LOG_TAG, "OAuth verification success!");
-        SetDisplayNameTask task = new SetDisplayNameTask(getApplicationContext(), DevConstants.STABLE_DEV_PROFILE_SERVER);
-        task.execute(BEARER_TOKEN, "FxA_testing");
+        RequestRefreshedToken task = new RequestRefreshedToken(getApplicationContext(),
+                FxAConstants.STABLE_DEV_REFRESH_ENDPOINT);
+        task.execute(BEARER_TOKEN, REFRESH_TOKEN);
+    }
+
+    @Override
+    synchronized public void processRefreshToken(JSONObject jObj) {
+        Log.i(LOG_TAG, "Refresh token success!");
+        String new_access_token = jObj.optString("access_token");
+        Log.i(LOG_TAG, "A new access token should be visible in this JSON blob: " + new_access_token);
+        if (!TextUtils.isEmpty(new_access_token)) {
+            BEARER_TOKEN = new_access_token;
+            Log.i(LOG_TAG, "New access token is set! [" + new_access_token + "]");
+
+            SetDisplayNameTask task = new SetDisplayNameTask(getApplicationContext(),
+                    FxAConstants.STABLE_DEV_PROFILE_SERVER);
+            task.execute(BEARER_TOKEN, "FxA_testing");
+        } else {
+            Log.i(LOG_TAG, "No refreshed access token was found");
+        }
     }
 }

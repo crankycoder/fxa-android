@@ -1,7 +1,3 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package org.mozilla.accounts.fxa.tasks;
 
 import android.content.Context;
@@ -18,44 +14,72 @@ import org.mozilla.accounts.fxa.LoggerUtil;
 import org.mozilla.accounts.fxa.net.HTTPResponse;
 import org.mozilla.accounts.fxa.net.HttpUtil;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY;
-import static org.mozilla.accounts.fxa.Intents.OAUTH_VERIFY_FAILURE;
+import static org.mozilla.accounts.fxa.Intents.ACCESS_TOKEN_REFRESH;
+import static org.mozilla.accounts.fxa.Intents.ACCESS_TOKEN_REFRESH_FAILURE;
 
-public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
+/**
+ * Created by victorng on 2015-12-31.
+ *
+ *
+ * This class jsut calls GET on a URL, passes in a refresh token, an existing access token
+ * and the server processes
+ *
+ */
+public class RequestRefreshedToken extends AsyncTask<String, Void, JSONObject> {
 
-    private static final String LOG_TAG = LoggerUtil.makeLogTag(VerifyOAuthTask.class);
-    private final String oauth2_endpoint;
+    // Most applications should use a refreshed access token on application startup.
+    // This will minimize the lifetime of any access token.
+
+    private static final String LOG_TAG = LoggerUtil.makeLogTag(RequestRefreshedToken.class);
+    private final String refresh_endpoint;
     private final Context mContext;
 
-    public VerifyOAuthTask(Context ctx, String oauth2Endpoint) {
+    public RequestRefreshedToken(Context ctx, String refresh_token_endpoint) {
         mContext = ctx;
-        oauth2_endpoint = oauth2Endpoint;
+        refresh_endpoint = refresh_token_endpoint;
     }
 
-    public String getOauth2Endpoint() {
-        return oauth2_endpoint;
+    public String getRefreshTokenEndpoint() {
+        return refresh_endpoint;
     }
 
+    /*
+     This task requires :
+
+     1. an access token
+     2. a refresh token
+     */
     @Override
     protected JSONObject doInBackground(String... strings) {
-        if (strings.length != 1 || TextUtils.isEmpty(strings[0])) {
-            Log.i(LOG_TAG, "Missing a bearer token.");
+        if (strings.length != 2) {
+            Log.i(LOG_TAG, "Invalid number of arguments.");
             return null;
         }
 
-        return verify(strings[0]);
+
+        return verify(strings);
     }
 
     public AsyncTask<String, Void, JSONObject> execute(String bearerToken) {
         return super.execute(bearerToken);
     }
 
-    public JSONObject verify(String bearerToken) {
+    public JSONObject verify(String... strings) {
+        String bearerToken = strings[0];
+        String refreshToken = strings[1];
+
+
         if (TextUtils.isEmpty(bearerToken)) {
-            Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
+            Log.w(LOG_TAG, "Missing an access token.");
+            return null;
+        }
+
+        if (TextUtils.isEmpty(refreshToken)) {
+            Log.w(LOG_TAG, "Missing a refresh token.");
             return null;
         }
 
@@ -64,19 +88,23 @@ public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
-        String verifyTokenURL = getOauth2Endpoint() + "/v1/verify";
+        headers.put("Authorization", "Bearer: " + bearerToken);
 
-        Log.i(LOG_TAG, "Verifying against URL: ["+verifyTokenURL+"]");
         JSONObject blob = new JSONObject();
         try {
-            blob.put("token", bearerToken);
+            blob.put("refresh_token", refreshToken);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting token: [" + bearerToken + "]", e);
+            Log.e(LOG_TAG, "Error setting token: [" + refreshToken+ "]", e);
             return null;
         }
 
-        Log.i(LOG_TAG,"Posting JSON blob: " + blob.toString());
-        HTTPResponse resp = httpUtil.post(verifyTokenURL, blob.toString().getBytes(), headers);
+        Log.i(LOG_TAG, "Refreshing token against: ["+getRefreshTokenEndpoint()+"]");
+        Log.i(LOG_TAG, "Refreshing token blob: "+blob.toString());
+
+        HTTPResponse resp = httpUtil.post_nozip(getRefreshTokenEndpoint(),
+                blob.toString().getBytes(),
+                headers);
+
         if (resp.isSuccessCode2XX()) {
             try {
                 return new JSONObject(resp.body());
@@ -92,12 +120,11 @@ public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        Log.i(LOG_TAG, "onPostExecute.  JSONObject = " + result);
         if (result == null) {
-            Intent intent = new Intent(OAUTH_VERIFY_FAILURE);
+            Intent intent = new Intent(ACCESS_TOKEN_REFRESH_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         } else {
-            Intent intent = new Intent(OAUTH_VERIFY);
+            Intent intent = new Intent(ACCESS_TOKEN_REFRESH);
             intent.putExtra("json", result.toString());
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
         }

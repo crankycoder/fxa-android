@@ -23,4 +23,6 @@ public interface IFxACallbacks {
     void processOauthDestroy();
 
     void processOauthVerify();
+
+    void processRefreshToken(JSONObject jObj);
 }
