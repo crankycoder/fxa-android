@@ -101,6 +101,7 @@ public class RequestRefreshedToken extends AsyncTask<String, Void, JSONObject> {
         Log.i(LOG_TAG, "Refreshing token against: ["+getRefreshTokenEndpoint()+"]");
         Log.i(LOG_TAG, "Refreshing token blob: "+blob.toString());
 
+        Log.i(LOG_TAG, "Headers: " + headers.toString());
         HTTPResponse resp = httpUtil.post_nozip(getRefreshTokenEndpoint(),
                 blob.toString().getBytes(),
                 headers);
