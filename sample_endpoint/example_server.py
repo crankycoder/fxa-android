@@ -24,6 +24,7 @@ class MainResource(object):
         payload = {"client_id": CLIENT_ID,
                    "client_secret": SECRET}
 
+
         # Copy out all values from the request
         for k, v in req.params.items():
             payload[k] = v
@@ -51,6 +52,28 @@ class RefreshTokenResource(object):
 
         payload = {"client_id": CLIENT_ID, "client_secret": SECRET}
         payload["grant_type"] = "refresh_token"
+
+        auth_header = req.get_header('Authorization')
+        if auth_header:
+            auth_header = auth_header.strip()
+
+            if not auth_header or 'Bearer:' not in auth_header:
+                err_blob = {'error': 'Invalid or missing bearer token'}
+                resp.body = json.dumps(err_blob)
+                resp.status = falcon.HTTP_405
+                return
+
+            access_token = auth_header.split("Bearer:")[-1].strip()
+            fxa_resp = requests.post("https://oauth-stable.dev.lcip.org/v1/verify",
+                    data=json.dumps({"token": access_token}))
+
+            if fxa_resp.status_code != 200:
+                print "Invalid access token. Verify response: " + str(fxa_resp.status)
+                return
+            else:
+                print "Existing access token is valid!"
+        else:
+            print "No auth header found!" 
 
         # Copy out all values from the request
         body = req.stream.read()
