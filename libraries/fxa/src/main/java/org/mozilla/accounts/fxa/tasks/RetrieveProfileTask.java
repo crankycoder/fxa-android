@@ -54,7 +54,6 @@ public class RetrieveProfileTask extends AsyncTask<String, Void, ProfileJson> {
     }
 
     ProfileJson getUserProfile(String bearerToken) {
-
         try {
             HttpUtil httpUtil = getHttpUtil();
 
@@ -67,7 +66,7 @@ public class RetrieveProfileTask extends AsyncTask<String, Void, ProfileJson> {
 
             return profileJson;
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Wut", e);
+            Log.e(LOG_TAG, "Failed to fetch a profile from the FxA profile server.");
             return null;
         }
     }

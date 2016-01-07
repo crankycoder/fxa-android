@@ -49,7 +49,7 @@ public class OAuthDialog extends Dialog {
                 + "&access_type=offline"   // This is for refresh tokens
                 + "&redirect_uri=" + mAppCallback;
 
-        Log.i(LOG_TAG, mUrl);
+        Log.d(LOG_TAG, mUrl);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class OAuthDialog extends Dialog {
             try {
                 jsonBlob = (String) xpath.evaluate("//pre", source, XPathConstants.STRING);
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Error extracting <pre> tag: [" + e.toString() + "] Content: [" + html + "]");
+                Log.d(LOG_TAG, "Error extracting <pre> tag: [" + e.toString() + "] Content: [" + html + "]");
                 return;
             }
 

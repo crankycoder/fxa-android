@@ -94,14 +94,10 @@ public class RequestRefreshedToken extends AsyncTask<String, Void, JSONObject> {
         try {
             blob.put("refresh_token", refreshToken);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting token: [" + refreshToken+ "]", e);
+            Log.w(LOG_TAG, "Error setting refresh token to get the new access token.");
             return null;
         }
 
-        Log.i(LOG_TAG, "Refreshing token against: ["+getRefreshTokenEndpoint()+"]");
-        Log.i(LOG_TAG, "Refreshing token blob: "+blob.toString());
-
-        Log.i(LOG_TAG, "Headers: " + headers.toString());
         HTTPResponse resp = httpUtil.post_nozip(getRefreshTokenEndpoint(),
                 blob.toString().getBytes(),
                 headers);
@@ -110,11 +106,11 @@ public class RequestRefreshedToken extends AsyncTask<String, Void, JSONObject> {
             try {
                 return new JSONObject(resp.body());
             } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error fetching verification response.", e);
+                Log.e(LOG_TAG, "Error marshalling the refreshed access token.");
                 return null;
             }
         } else {
-            Log.w(LOG_TAG, "HTTP Status: " + resp.httpStatusCode());
+            Log.w(LOG_TAG, "Refresh token HTTP Status: " + resp.httpStatusCode());
             return null;
         }
     }

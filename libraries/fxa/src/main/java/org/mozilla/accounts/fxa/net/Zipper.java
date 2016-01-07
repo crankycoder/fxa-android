@@ -41,16 +41,20 @@ public class Zipper {
                     gz_outputstream.close();
                 }
             } catch (IOException e) {
-                Log.e(LOG_TAG, "", e);
-                // there's nothing you could do to fix this
+                // there's nothing you could do to fix this - just
+                // clear the output buffer
+                Log.e(LOG_TAG, "GZip compression error.", e);
+                output = null;
             }
             try {
                 if (os != null) {
                     os.close();
                 }
             } catch (IOException e) {
-                Log.e(LOG_TAG, "", e);
-                // there's nothing you could do to fix this
+                // there's nothing you could do to fix this - just
+                // clear the output buffer
+                Log.e(LOG_TAG, "Error closing GZip output stream.", e);
+                output = null;
             }
         }
         return output;
@@ -75,7 +79,7 @@ public class Zipper {
                 result.append(read);
             }
         } catch (IOException e) {
-            Log.w(LOG_TAG, "Can't decompress report data: " + e.toString());
+            Log.w(LOG_TAG, "Can't decompress gzip data: " + e.toString());
             return null;
         } finally {
             if (gzipInputStream != null) {

@@ -55,7 +55,7 @@ public class DestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
 
     public boolean verify(String bearerToken) {
         if (TextUtils.isEmpty(bearerToken)) {
-            Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
+            Log.w(LOG_TAG, "Can't destroy an empty bearer token.");
             return false;
         }
 
@@ -71,7 +71,7 @@ public class DestroyOAuthTask extends AsyncTask<String, Void, Boolean> {
         try {
             blob.put("token", bearerToken);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting token: ["+bearerToken+"]", e);
+            Log.e(LOG_TAG, "Error setting bearer token in JSON blob.");
             return false;
         }
 

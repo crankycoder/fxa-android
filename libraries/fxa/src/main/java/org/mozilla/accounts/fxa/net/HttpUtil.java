@@ -46,7 +46,7 @@ public class HttpUtil {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Bad URL", e);
+            Log.e(LOG_TAG, "Malformed URL", e);
             return new HTTPResponse(404, 0);
         }
 
@@ -63,7 +63,7 @@ public class HttpUtil {
             httpURLConnection.setRequestMethod(HTTP_METHOD);
             httpURLConnection.setRequestProperty(USER_AGENT_HEADER, userAgent);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Couldn't open a connection: ", e);
+            Log.e(LOG_TAG, "Couldn't open a HTTP connection: ", e);
             return new HTTPResponse(598, 0);
         }
 
@@ -135,7 +135,7 @@ public class HttpUtil {
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestMethod("POST");
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Couldn't open a connection: ", e);
+            Log.e(LOG_TAG, "Couldn't open a HTTP connection: ", e);
             return null;
         }
 
@@ -178,7 +178,7 @@ public class HttpUtil {
                     getContentBody(httpURLConnection),
                     wire_data.length);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "post error", e);
+            Log.e(LOG_TAG, "Error with HTTP POST", e);
         } finally {
             httpURLConnection.disconnect();
         }
@@ -209,14 +209,14 @@ public class HttpUtil {
                 try {
                     out.close();
                 } catch (IOException ioEx) {
-                    Log.e(LOG_TAG, "Error closing tile output stream.", ioEx);
+                    Log.w(LOG_TAG, "Error closing HTTP output stream.");
                 }
             }
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException ioEx) {
-                    Log.e(LOG_TAG, "Error closing tile output stream.", ioEx);
+                    Log.w(LOG_TAG, "Error closing HTTP output stream.");
                 }
             }
         }

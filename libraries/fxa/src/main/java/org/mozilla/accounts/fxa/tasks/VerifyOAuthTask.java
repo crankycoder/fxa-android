@@ -55,7 +55,7 @@ public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
     public JSONObject verify(String bearerToken) {
         if (TextUtils.isEmpty(bearerToken)) {
-            Log.w(LOG_TAG, "Bearer token must be set: [" + bearerToken + "]");
+            Log.w(LOG_TAG, "Bearer token must be set.");
             return null;
         }
 
@@ -66,22 +66,20 @@ public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
         headers.put("Content-Type", "application/json");
         String verifyTokenURL = getOauth2Endpoint() + "/v1/verify";
 
-        Log.i(LOG_TAG, "Verifying against URL: ["+verifyTokenURL+"]");
         JSONObject blob = new JSONObject();
         try {
             blob.put("token", bearerToken);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting token: [" + bearerToken + "]", e);
+            Log.e(LOG_TAG, "Error setting bearer token.");
             return null;
         }
 
-        Log.i(LOG_TAG,"Posting JSON blob: " + blob.toString());
         HTTPResponse resp = httpUtil.post(verifyTokenURL, blob.toString().getBytes(), headers);
         if (resp.isSuccessCode2XX()) {
             try {
                 return new JSONObject(resp.body());
             } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error fetching verification response.", e);
+                Log.e(LOG_TAG, "JSON couldn't be decoded from verification response.");
                 return null;
             }
         } else {
@@ -92,7 +90,6 @@ public class VerifyOAuthTask extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        Log.i(LOG_TAG, "onPostExecute.  JSONObject = " + result);
         if (result == null) {
             Intent intent = new Intent(OAUTH_VERIFY_FAILURE);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);

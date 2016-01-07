@@ -48,7 +48,7 @@ public class FxAGlobals {
             } else if (intent.getAction().equals(Intents.ACCESS_TOKEN_REFRESH_FAILURE)) {
                 processRefreshToken(intent, false);
             } else {
-                Log.w(LOG_TAG, "Unexpected intent: " + intent);
+                Log.w(LOG_TAG, "Unexpected intent: " + intent.toString());
             }
         }
     };
@@ -78,18 +78,17 @@ public class FxAGlobals {
 
         String jsonBlob = intent.getStringExtra("json");
         if (jsonBlob == null) {
-            Log.w(LOG_TAG, "error extracting json data");
+            Log.w(LOG_TAG, "Error extracting JSON data and bearer token from auth callback.");
             return;
         }
         JSONObject authJSON = null;
         try {
             authJSON = new JSONObject(jsonBlob);
-            Log.i(LOG_TAG, "Login yielded this JSON blob: " + authJSON);
             String bearerToken = authJSON.getString("access_token");
             callbackSite.processReceiveBearerToken(bearerToken);
             callbackSite.processRawResponse(authJSON);
         } catch (JSONException jse) {
-            Log.e(LOG_TAG, "Error fetching bearer token. JSON = [" + authJSON + "]", jse);
+            Log.e(LOG_TAG, "Error extracting bearer token from OAuth2 server.");
         }
     }
 
@@ -128,9 +127,8 @@ public class FxAGlobals {
         }
 
         String jsonBlob = intent.getStringExtra("json");
-        Log.i(LOG_TAG, "Profile response body: " + jsonBlob);
         if (jsonBlob == null) {
-            Log.w(LOG_TAG, "error extracting json data");
+            Log.w(LOG_TAG, "JSON Blob from profile read was null.");
             callbackSite.failCallback(Intents.PROFILE_READ);
             return;
         }
@@ -139,10 +137,9 @@ public class FxAGlobals {
             JSONObject jObj = new JSONObject(jsonBlob);
             callbackSite.processProfileRead(jObj);
         } catch (JSONException e) {
-            Log.w(LOG_TAG, "Error decoding JSON", e);
+            Log.e(LOG_TAG, "Error marshalling JSON from profile read.");
             callbackSite.failCallback(Intents.PROFILE_READ);
         }
-
     }
 
 
@@ -173,7 +170,7 @@ public class FxAGlobals {
             JSONObject jObj = new JSONObject(jsonBlob);
             callbackSite.processRefreshToken(jObj);
         } catch (JSONException e) {
-            Log.w(LOG_TAG, "Error decoding JSON", e);
+            Log.w(LOG_TAG, "Error processing refresh token JSON.");
             callbackSite.failCallback(Intents.PROFILE_READ);
         }
     }

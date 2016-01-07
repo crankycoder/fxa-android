@@ -60,8 +60,7 @@ public class SetDisplayNameTask extends AsyncTask<String, Void, String> {
          */
     public String setDisplayName(String bearerToken, String displayName) {
         if (TextUtils.isEmpty(bearerToken) || TextUtils.isEmpty(displayName)) {
-            Log.w(LOG_TAG, "Display name and bearer token must be set: [" + bearerToken +
-                    ", " + displayName + "]");
+            Log.w(LOG_TAG, "Display name and bearer token must be set.");
             return null;
         }
 
@@ -79,7 +78,7 @@ public class SetDisplayNameTask extends AsyncTask<String, Void, String> {
         try {
             blob.put("displayName", displayName);
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error setting display_name: ["+displayName+"]", e);
+            Log.e(LOG_TAG, "Error setting display_name in JSON blob.");
             return null;
         }
 
