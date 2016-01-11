@@ -40,3 +40,21 @@ The code in this project is structured as a full Android application and all the
 Under `android/build.gradle`, you will find a fully working build.gradle configuration for a working Android application with directives to build either from the library source, or to use the JCenter hosted precompiled AAR file.
 
 For all release tags in github, we will set the build.gradle file to use official JCenter releases.
+
+
+
+## Uploading to Bintray
+
+Uploads of the fxa library into the bintray repository is handled with
+an API key.  Current documentation for obtaining an API key can be
+found on the [bintray usermanual site](https://bintray.com/docs/usermanual/).
+
+
+A sample bintray.properties file has been included in this project
+which will allow you to enter your API key and user name.  The
+template is in `bintray.properties.template`.  Just rename it to
+bintray.properties and update the user and apikey to your own bintray
+credentials.
+
+
+
