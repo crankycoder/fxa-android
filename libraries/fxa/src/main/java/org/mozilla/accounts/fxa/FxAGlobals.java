@@ -84,9 +84,7 @@ public class FxAGlobals {
         JSONObject authJSON = null;
         try {
             authJSON = new JSONObject(jsonBlob);
-            String bearerToken = authJSON.getString("access_token");
-            callbackSite.processReceiveBearerToken(bearerToken);
-            callbackSite.processRawResponse(authJSON);
+            callbackSite.processWebSvcAuthResponse(authJSON);
         } catch (JSONException jse) {
             Log.e(LOG_TAG, "Error extracting bearer token from OAuth2 server.");
         }

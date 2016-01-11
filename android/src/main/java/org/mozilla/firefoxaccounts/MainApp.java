@@ -9,6 +9,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.mozilla.accounts.fxa.FxAGlobals;
 import org.mozilla.accounts.fxa.IFxACallbacks;
@@ -74,24 +75,26 @@ public class MainApp extends Activity implements IFxACallbacks {
 
     // FxA callbacks here
     @Override
-    public void processReceiveBearerToken(String bearerToken) {
-        BEARER_TOKEN = bearerToken;
+    public void processWebSvcAuthResponse(JSONObject authJSON) {
+
+        // TODO: process the authJSON to extract the refresh_token
+        try {
+            BEARER_TOKEN = authJSON.getString("access_token");
+            Log.i(LOG_TAG, "Succesfully assigned access token");
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Unable to fetch access_token from demo");
+            return;
+        }
+        REFRESH_TOKEN  = authJSON.optString("refresh_token", "");
+        Log.i(LOG_TAG, "MainApp received refresh token: ["+REFRESH_TOKEN+"]");
+        Log.i(LOG_TAG, "MainApp Received JSON response: " + authJSON.toString());
+
         RetrieveProfileTask task = new RetrieveProfileTask(getApplicationContext(), FxAConstants.STABLE_DEV_PROFILE_SERVER);
         task.execute(BEARER_TOKEN);
     }
 
     @Override
-    public void processRawResponse(JSONObject authJSON) {
-
-        // TODO: process the authJSON to extract the refresh_token
-        REFRESH_TOKEN  = authJSON.optString("refresh_token", "");
-        Log.i(LOG_TAG, "MainApp received refresh token: ["+REFRESH_TOKEN+"]");
-        Log.i(LOG_TAG, "MainApp Received JSON response: " + authJSON.toString());
-    }
-
-    @Override
     public void failCallback(String intent_name) {
-        // TODO: handle callback failures here
         Log.i(LOG_TAG, "A callback failed: ["+intent_name+"]");
     }
 
