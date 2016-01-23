@@ -35,7 +35,7 @@ dependencies {
 }
 ```
 
-The code in this project is structured as a full Android application and all the Firefox accoutns library source code is available under the libraries/fxa subdirectory.
+The code in this project is structured as a full Android application and all the Firefox accounts library source code is available under the libraries/fxa subdirectory.
 
 Under `android/build.gradle`, you will find a fully working build.gradle configuration for a working Android application with directives to build either from the library source, or to use the JCenter hosted precompiled AAR file.
 
